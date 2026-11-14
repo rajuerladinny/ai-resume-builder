@@ -1,0 +1,98 @@
+:root {
+  --brand: #1f6feb;
+  --bg: #f4f6fa;
+  --text: #1b1f24;
+  --muted: #6b7280;
+  --border: #d8dee6;
+  --good: #137333;
+  --good-bg: #e6f4ea;
+  --ok: #9a6700;
+  --low: #b42318;
+  --low-bg: #fdecea;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+}
+.page { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+header h1 { margin: 0 0 4px; }
+header p { margin: 0 0 20px; color: var(--muted); }
+h2 { margin: 0; font-size: 18px; }
+h3 { margin: 16px 0 8px; font-size: 15px; }
+textarea, button { font: inherit; }
+textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  resize: vertical;
+}
+textarea.output { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; }
+label { font-weight: 600; font-size: 14px; }
+.inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 700px) { .inputs { grid-template-columns: 1fr; } }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 16px 0; }
+button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  cursor: pointer;
+}
+button.secondary { background: #fff; color: var(--text); border: 1px solid var(--border); }
+button:disabled { opacity: 0.5; cursor: default; }
+.row { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.scores { display: flex; gap: 24px; }
+.score { display: flex; flex-direction: column; }
+.score-value { font-size: 36px; font-weight: 700; }
+.score-label { font-size: 13px; color: var(--muted); }
+.score.good .score-value { color: var(--good); }
+.score.ok .score-value { color: var(--ok); }
+.score.low .score-value { color: var(--low); }
+.chip {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.chip.good { background: var(--good-bg); color: var(--good); }
+.chip.low { background: var(--low-bg); color: var(--low); }
+.hint { color: var(--muted); font-size: 14px; }
+.error { color: var(--low); }
+.notice, .warning { padding: 10px 12px; border-radius: 8px; margin: 0 0 12px; font-size: 14px; }
+.notice { background: var(--bg); }
+.warning { background: var(--low-bg); color: var(--low); }
+footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 24px; }
+.print-only { display: none; }
+
+/* "Save as PDF" prints only the tailored resume. */
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .page { max-width: none; padding: 0; }
+  .card { border: 0; padding: 0; margin: 0; }
+  .print-only {
+    display: block;
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11pt;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
