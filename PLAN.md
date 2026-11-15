@@ -141,6 +141,7 @@ features.
 - [x] Resume upload (PDF, .docx, text), read in memory
 - [x] Rule-based resume review; changes view; text download
 - [x] In-browser demo mode; CI for tests, builds and the Docker image
+- [x] Compare resumes: rank up to 20 resumes against one job post (recruiter use)
 - [ ] First end-to-end run on a laptop
 - [ ] Connect a real LLM and judge the output on 5 real job posts
 - [ ] Ten test users

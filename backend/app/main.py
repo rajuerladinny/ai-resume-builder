@@ -26,7 +26,8 @@ app.add_middleware(
 # Per visitor (IP address). Analysis is free to run; tailoring costs LLM money.
 analyze_limiter = RateLimiter(int(os.environ.get("ANALYZE_LIMIT", "60")), 3600)
 tailor_limiter = RateLimiter(int(os.environ.get("TAILOR_LIMIT", "10")), 3600)
-extract_limiter = RateLimiter(int(os.environ.get("EXTRACT_LIMIT", "30")), 3600)
+extract_limiter = RateLimiter(int(os.environ.get("EXTRACT_LIMIT", "120")), 3600)
+MAX_COMPARE = 20
 
 
 @app.middleware("http")
@@ -44,6 +45,16 @@ async def security_headers(request: Request, call_next):
 class ResumeJobIn(BaseModel):
     resume: str = Field(min_length=100, max_length=20_000)
     job: str = Field(min_length=100, max_length=10_000)
+
+
+class ResumeItem(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    text: str = Field(min_length=1, max_length=20_000)
+
+
+class RankIn(BaseModel):
+    job: str = Field(min_length=100, max_length=10_000)
+    resumes: list[ResumeItem] = Field(min_length=1, max_length=MAX_COMPARE)
 
 
 def client_ip(request: Request) -> str:
@@ -72,6 +83,20 @@ def post_tailor(body: ResumeJobIn, request: Request):
     result = tailoring.tailor(body.resume, body.job)
     result["review"] = checks.review(result["tailored"])
     return result
+
+
+@app.post("/api/rank")
+def post_rank(body: RankIn, request: Request):
+    """Score up to 20 resumes against one job post, best match first."""
+    if not analyze_limiter.allow(client_ip(request)):
+        raise HTTPException(429, "Too many requests. Please try again later.")
+    ranked = keywords.rank_resumes(body.job, [r.model_dump() for r in body.resumes])
+    return {
+        "keywords": len(keywords.extract_keywords(body.job)),
+        "results": [
+            {**r, "review": checks.review(body.resumes[r["index"]].text)} for r in ranked
+        ],
+    }
 
 
 @app.post("/api/extract")

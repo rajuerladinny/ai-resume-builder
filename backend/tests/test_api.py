@@ -60,6 +60,36 @@ def test_extract_rejects_bad_and_oversized_files(client):
     assert too_big.status_code == 413
 
 
+def test_rank_orders_resumes_and_includes_reviews(client):
+    body = {
+        "job": JOB,
+        "resumes": [
+            {"name": "baker.pdf", "text": "I bake bread and cakes."},
+            {"name": "ravi.docx", "text": RESUME},
+        ],
+    }
+    res = client.post("/api/rank", json=body)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["keywords"] > 0
+    assert [r["name"] for r in data["results"]] == ["ravi.docx", "baker.pdf"]
+    assert data["results"][0]["score"] > data["results"][1]["score"] == 0
+    assert data["results"][0]["review"]["total"] == 7
+    assert [r["index"] for r in data["results"]] == [1, 0]
+    # Two files may share a name; each still gets its own review.
+    same = {"job": JOB, "resumes": [{"name": "cv.pdf", "text": "x"}, {"name": "cv.pdf", "text": RESUME}]}
+    words = [r["review"]["words"] for r in client.post("/api/rank", json=same).json()["results"]]
+    assert words == [60, 1]
+
+
+def test_rank_limits_the_number_of_resumes(client):
+    one = {"name": "a.txt", "text": RESUME}
+    too_many = {"job": JOB, "resumes": [one] * (main.MAX_COMPARE + 1)}
+    assert client.post("/api/rank", json=too_many).status_code == 422
+    assert client.post("/api/rank", json={"job": JOB, "resumes": []}).status_code == 422
+    assert client.post("/api/rank", json={"job": "short", "resumes": [one]}).status_code == 422
+
+
 def test_rate_limits(client, monkeypatch):
     monkeypatch.setattr(main.tailor_limiter, "limit", 0)
     assert client.post("/api/tailor", json={"resume": RESUME, "job": JOB}).status_code == 429

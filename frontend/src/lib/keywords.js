@@ -123,6 +123,13 @@ export function analyze(resumeText, jobText) {
   };
 }
 
+/** Score several resumes ({name, text}) against one job post, best match first. */
+export function rankResumes(jobText, resumes) {
+  return resumes
+    .map((r, index) => ({ index, name: r.name, ...analyze(r.text, jobText) }))
+    .sort((a, b) => b.score - a.score); // stable, so ties keep the order given
+}
+
 /** Job keywords that appear in the tailored resume but not the original. */
 export function inventedTerms(original, tailored, job) {
   const before = analyze(original, job);

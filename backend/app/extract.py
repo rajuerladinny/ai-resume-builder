@@ -47,6 +47,20 @@ def _pdf(data: bytes) -> str:
     return text
 
 
+def docx_xml_to_text(xml: str) -> str:
+    """Paragraph text from word/document.xml, read with patterns, not an XML
+    parser, so entity tricks cannot apply."""
+    paragraphs = []
+    for body in re.findall(r"<w:p[ >].*?</w:p>", xml, flags=re.S):
+        parts = []
+        for text, mark in re.findall(
+            r"<w:t(?: [^>]*)?>(.*?)</w:t>|<w:(tab|br|cr)\b[^>]*/>", body, flags=re.S
+        ):
+            parts.append("\t" if mark == "tab" else "\n" if mark else html.unescape(text))
+        paragraphs.append("".join(parts))
+    return "\n".join(paragraphs)
+
+
 def _docx(data: bytes) -> str:
     try:
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
@@ -61,16 +75,7 @@ def _docx(data: bytes) -> str:
         raise ExtractError("Only .docx Word files are supported.") from None
     except Exception:
         raise ExtractError("This Word file could not be read.") from None
-    # Read with patterns, not an XML parser, so entity tricks cannot apply.
-    paragraphs = []
-    for body in re.findall(r"<w:p[ >].*?</w:p>", xml, flags=re.S):
-        parts = []
-        for text, mark in re.findall(
-            r"<w:t(?: [^>]*)?>(.*?)</w:t>|<w:(tab|br|cr)\b[^>]*/>", body, flags=re.S
-        ):
-            parts.append("\t" if mark == "tab" else "\n" if mark else html.unescape(text))
-        paragraphs.append("".join(parts))
-    return "\n".join(paragraphs)
+    return docx_xml_to_text(xml)
 
 
 def extract_text(data: bytes) -> str:

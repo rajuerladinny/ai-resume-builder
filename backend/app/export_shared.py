@@ -12,7 +12,11 @@ tests/test_shared.py fails when either file is out of date.
 import json
 from pathlib import Path
 
-from . import checks, keywords, tailor
+import base64
+import io
+import zipfile
+
+from . import checks, extract, keywords, tailor
 
 ROOT = Path(__file__).resolve().parents[2]
 VOCAB_PATH = ROOT / "frontend" / "src" / "lib" / "vocab.js"
@@ -57,10 +61,60 @@ def parity() -> dict:
         case["analyze"] = keywords.analyze(case["resume"], case["job"])
         case["keywords"] = keywords.extract_keywords(case["job"])
         case["review"] = checks.review(case["resume"])
+    candidates = [
+        {"name": "weak.txt", "text": "I bake bread and cakes."},
+        {"name": "original.pdf", "text": sample["resume"]},
+        {"name": "tailored.docx", "text": sample["tailored"]},
+        {"name": "copy of original.pdf", "text": sample["resume"]},
+    ]
     return {
         "cases": cases,
         "sample_check": tailor.invented_terms(sample["resume"], sample["tailored"], sample["job"]),
+        "rank": {
+            "job": sample["job"],
+            "resumes": candidates,
+            "expected": keywords.rank_resumes(sample["job"], candidates),
+        },
+        "files": [
+            {
+                "name": "deflated.docx",
+                "base64": base64.b64encode(sample_docx()).decode(),
+                "text": extract.extract_text(sample_docx()),
+            },
+            {
+                "name": "stored.docx",
+                "base64": base64.b64encode(sample_docx(compress=False)).decode(),
+                "text": extract.extract_text(sample_docx(compress=False)),
+            },
+            {
+                "name": "notes.txt",
+                "base64": base64.b64encode("\ufeffLine one  \r\n\r\n\r\n\r\nLine two\r".encode()).decode(),
+                "text": extract.extract_text("\ufeffLine one  \r\n\r\n\r\n\r\nLine two\r".encode()),
+            },
+        ],
     }
+
+
+DOCX_XML = (
+    '<?xml version="1.0" encoding="UTF-8"?><w:document><w:body>'
+    '<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>Asha Rao</w:t></w:r></w:p>'
+    '<w:p w:rsidR="1"><w:r><w:t xml:space="preserve">R&amp;D </w:t><w:tab/><w:t>Lead</w:t></w:r></w:p>'
+    "<w:p><w:r><w:t>Built dashboards in React &lt;2021&gt;</w:t><w:br/><w:t>Second line   </w:t></w:r></w:p>"
+    "<w:p/>"
+    + "".join(f"<w:p><w:r><w:t>Skill line {n}</w:t></w:r></w:p>" for n in range(40))
+    + "</w:body></w:document>"
+)
+
+
+def sample_docx(compress: bool = True) -> bytes:
+    """A small .docx with fixed timestamps, so the bytes never change."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        for name, body in (("[Content_Types].xml", "<Types/>"), ("word/document.xml", DOCX_XML)):
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED if compress else zipfile.ZIP_STORED
+            archive.writestr(info, body)
+    return buffer.getvalue()
 
 
 def read_js(path: Path) -> dict:

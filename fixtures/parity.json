@@ -653,5 +653,152 @@
     "unit testing",
     "engineer",
     "dashboard"
+  ],
+  "rank": {
+    "job": "Senior Frontend Engineer\n\nWe are looking for a Senior Frontend Engineer with 5+ years of experience in React.js and TypeScript. You will build dashboards for our payments platform and mentor junior engineers. Experience with Next.js, GraphQL and CI/CD pipelines is required. Knowledge of Node.js and AWS is a plus.\n\nResponsibilities: own dashboards end to end, improve performance of the payments dashboards, write unit testing suites with Jest, and mentor engineers. You care about accessibility and responsive design.\n",
+    "resumes": [
+      {
+        "name": "weak.txt",
+        "text": "I bake bread and cakes."
+      },
+      {
+        "name": "original.pdf",
+        "text": "Ravi Kumar\nravi.kumar@example.com | +91 98765 43210 | Hyderabad\n\nSUMMARY\nFront-end developer with 6 years of experience building web applications for payments and retail companies.\n\nEXPERIENCE\nAcme Payments, Senior Developer, 2021 to present\n- Built customer screens in ReactJS and TS used by 2 million customers\n- Responsible for the reporting screens that show payment data to merchants\n- Cut page load time by 40% through performance work\n- Wrote automated tests with Jest for every new component\n- Set up pipelines on Jenkins for continuous integration and delivery\n- Mentor for three junior developers\n\nShopline Retail, Developer, 2018 to 2021\n- Worked on the checkout pages for the online store using JavaScript and Redux\n- Built reusable form components shared by 4 teams\n- Fixed accessibility issues found in an external audit\n\nEDUCATION\nB.Tech in Computer Science, JNTU Hyderabad, 2018\n\nSKILLS\nJavaScript, React, Redux, HTML, CSS, Git, Jenkins\n"
+      },
+      {
+        "name": "tailored.docx",
+        "text": "RAVI KUMAR\nravi.kumar@example.com | +91 98765 43210 | Hyderabad\n\nSUMMARY\nSenior front-end engineer with 6 years of experience building React and TypeScript web applications for payments and retail companies.\n\nEXPERIENCE\nAcme Payments, Senior Developer, 2021 to present\n- Built customer dashboards in React and TypeScript used by 2 million customers\n- Own the payments reporting dashboards that show payment data to merchants\n- Improved performance, cutting page load time by 40%\n- Wrote unit testing suites with Jest for every new component\n- Set up CI/CD pipelines on Jenkins\n- Mentor three junior engineers\n\nShopline Retail, Developer, 2018 to 2021\n- Built the checkout pages for the online store using JavaScript and Redux\n- Built reusable form components shared by 4 teams\n- Fixed accessibility issues found in an external audit\n\nEDUCATION\nB.Tech in Computer Science, JNTU Hyderabad, 2018\n\nSKILLS\nReact, TypeScript, JavaScript, Redux, Jest, CI/CD, Jenkins, HTML, CSS, Git, Accessibility\n"
+      },
+      {
+        "name": "copy of original.pdf",
+        "text": "Ravi Kumar\nravi.kumar@example.com | +91 98765 43210 | Hyderabad\n\nSUMMARY\nFront-end developer with 6 years of experience building web applications for payments and retail companies.\n\nEXPERIENCE\nAcme Payments, Senior Developer, 2021 to present\n- Built customer screens in ReactJS and TS used by 2 million customers\n- Responsible for the reporting screens that show payment data to merchants\n- Cut page load time by 40% through performance work\n- Wrote automated tests with Jest for every new component\n- Set up pipelines on Jenkins for continuous integration and delivery\n- Mentor for three junior developers\n\nShopline Retail, Developer, 2018 to 2021\n- Worked on the checkout pages for the online store using JavaScript and Redux\n- Built reusable form components shared by 4 teams\n- Fixed accessibility issues found in an external audit\n\nEDUCATION\nB.Tech in Computer Science, JNTU Hyderabad, 2018\n\nSKILLS\nJavaScript, React, Redux, HTML, CSS, Git, Jenkins\n"
+      }
+    ],
+    "expected": [
+      {
+        "index": 2,
+        "name": "tailored.docx",
+        "score": 64,
+        "matched": [
+          "accessibility",
+          "ci/cd",
+          "jest",
+          "react",
+          "typescript",
+          "unit testing",
+          "engineer",
+          "dashboard",
+          "senior",
+          "front-end",
+          "payment",
+          "mentor"
+        ],
+        "missing": [
+          "aws",
+          "graphql",
+          "next.js",
+          "node.js",
+          "responsive design"
+        ],
+        "keywords": 17
+      },
+      {
+        "index": 1,
+        "name": "original.pdf",
+        "score": 43,
+        "matched": [
+          "accessibility",
+          "jest",
+          "react",
+          "typescript",
+          "senior",
+          "front-end",
+          "payment",
+          "mentor"
+        ],
+        "missing": [
+          "aws",
+          "ci/cd",
+          "graphql",
+          "next.js",
+          "node.js",
+          "responsive design",
+          "unit testing",
+          "engineer",
+          "dashboard"
+        ],
+        "keywords": 17
+      },
+      {
+        "index": 3,
+        "name": "copy of original.pdf",
+        "score": 43,
+        "matched": [
+          "accessibility",
+          "jest",
+          "react",
+          "typescript",
+          "senior",
+          "front-end",
+          "payment",
+          "mentor"
+        ],
+        "missing": [
+          "aws",
+          "ci/cd",
+          "graphql",
+          "next.js",
+          "node.js",
+          "responsive design",
+          "unit testing",
+          "engineer",
+          "dashboard"
+        ],
+        "keywords": 17
+      },
+      {
+        "index": 0,
+        "name": "weak.txt",
+        "score": 0,
+        "matched": [],
+        "missing": [
+          "accessibility",
+          "aws",
+          "ci/cd",
+          "graphql",
+          "jest",
+          "next.js",
+          "node.js",
+          "react",
+          "responsive design",
+          "typescript",
+          "unit testing",
+          "engineer",
+          "dashboard",
+          "senior",
+          "front-end",
+          "payment",
+          "mentor"
+        ],
+        "keywords": 17
+      }
+    ]
+  },
+  "files": [
+    {
+      "name": "deflated.docx",
+      "base64": "UEsDBBQAAAAIAAAAIQDHHBc8CgAAAAgAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwMEFAAAAAgAAAAhAEXzyjpWAQAAlQgAABEAAAB3b3JkL2RvY3VtZW50LnhtbJXW32rCMBQG8Fc55MK7rSbZH1dtZWPsahejugdIm6BhaVrSaPXth9U5GcL4bpJCvpwT+JGS2XxXO9qa0NnGZ4zfjhkZXzXa+lXGPpdvNxM2z2d9qptqUxsfD99lo/eHuR2GjzBMi7h3hvp0q1zGljY6w5J8lpwDwxDz526tqFDNYSUO6+GYGopQn4bO6iJjnP1uol3t0q5VlclYG0xnwtawvBipup2+0qlSn0ZVJscm70bp6w0uTvKysS6SVt26bFTQHVlPhVFVpJGLUzEWfLSK03P1MpyKL0zVeE3OekNE19skf5stvqxzxz3jf092EeZIWCBhiYTvkPA9En5Awo9IeIKEnyAUjBAy5BAihxQ5xMghRw5BckiSQ5QcshSQpcDuI2QpIEsBWQrIUkCWArIUkKWALCVkKSFLif1cIUsJWUrIUkKWErKUkKW8Zpn8vCaSiyfGN1BLAQIUAxQAAAAIAAAAIQDHHBc8CgAAAAgAAAATAAAAAAAAAAAAAACAAQAAAABbQ29udGVudF9UeXBlc10ueG1sUEsBAhQDFAAAAAgAAAAhAEXzyjpWAQAAlQgAABEAAAAAAAAAAAAAAIABOwAAAHdvcmQvZG9jdW1lbnQueG1sUEsFBgAAAAACAAIAgAAAAMABAAAAAA==",
+      "text": "Asha Rao\nR&D \tLead\nBuilt dashboards in React <2021>\nSecond line\nSkill line 0\nSkill line 1\nSkill line 2\nSkill line 3\nSkill line 4\nSkill line 5\nSkill line 6\nSkill line 7\nSkill line 8\nSkill line 9\nSkill line 10\nSkill line 11\nSkill line 12\nSkill line 13\nSkill line 14\nSkill line 15\nSkill line 16\nSkill line 17\nSkill line 18\nSkill line 19\nSkill line 20\nSkill line 21\nSkill line 22\nSkill line 23\nSkill line 24\nSkill line 25\nSkill line 26\nSkill line 27\nSkill line 28\nSkill line 29\nSkill line 30\nSkill line 31\nSkill line 32\nSkill line 33\nSkill line 34\nSkill line 35\nSkill line 36\nSkill line 37\nSkill line 38\nSkill line 39"
+    },
+    {
+      "name": "stored.docx",
+      "base64": "UEsDBBQAAAAAAAAAIQDHHBc8CAAAAAgAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbDxUeXBlcy8+UEsDBBQAAAAAAAAAIQBF88o6lQgAAJUIAAARAAAAd29yZC9kb2N1bWVudC54bWw8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJVVEYtOCI/Pjx3OmRvY3VtZW50Pjx3OmJvZHk+PHc6cD48dzpwUHI+PHc6cFN0eWxlIHc6dmFsPSJUaXRsZSIvPjwvdzpwUHI+PHc6cj48dzp0PkFzaGEgUmFvPC93OnQ+PC93OnI+PC93OnA+PHc6cCB3OnJzaWRSPSIxIj48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+UiZhbXA7RCA8L3c6dD48dzp0YWIvPjx3OnQ+TGVhZDwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PkJ1aWx0IGRhc2hib2FyZHMgaW4gUmVhY3QgJmx0OzIwMjEmZ3Q7PC93OnQ+PHc6YnIvPjx3OnQ+U2Vjb25kIGxpbmUgICA8L3c6dD48L3c6cj48L3c6cD48dzpwLz48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDA8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDE8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDI8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDM8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDQ8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDU8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDY8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDc8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDg8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDk8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDEwPC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAxMTwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMTI8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDEzPC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAxNDwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMTU8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDE2PC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAxNzwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMTg8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDE5PC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAyMDwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMjE8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDIyPC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAyMzwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMjQ8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDI1PC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAyNjwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMjc8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDI4PC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAyOTwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMzA8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDMxPC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAzMjwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMzM8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDM0PC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAzNTwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMzY8L3c6dD48L3c6cj48L3c6cD48dzpwPjx3OnI+PHc6dD5Ta2lsbCBsaW5lIDM3PC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQ+U2tpbGwgbGluZSAzODwvdzp0PjwvdzpyPjwvdzpwPjx3OnA+PHc6cj48dzp0PlNraWxsIGxpbmUgMzk8L3c6dD48L3c6cj48L3c6cD48L3c6Ym9keT48L3c6ZG9jdW1lbnQ+UEsBAhQDFAAAAAAAAAAhAMccFzwIAAAACAAAABMAAAAAAAAAAAAAAIABAAAAAFtDb250ZW50X1R5cGVzXS54bWxQSwECFAMUAAAAAAAAACEARfPKOpUIAACVCAAAEQAAAAAAAAAAAAAAgAE5AAAAd29yZC9kb2N1bWVudC54bWxQSwUGAAAAAAIAAgCAAAAA/QgAAAAA",
+      "text": "Asha Rao\nR&D \tLead\nBuilt dashboards in React <2021>\nSecond line\nSkill line 0\nSkill line 1\nSkill line 2\nSkill line 3\nSkill line 4\nSkill line 5\nSkill line 6\nSkill line 7\nSkill line 8\nSkill line 9\nSkill line 10\nSkill line 11\nSkill line 12\nSkill line 13\nSkill line 14\nSkill line 15\nSkill line 16\nSkill line 17\nSkill line 18\nSkill line 19\nSkill line 20\nSkill line 21\nSkill line 22\nSkill line 23\nSkill line 24\nSkill line 25\nSkill line 26\nSkill line 27\nSkill line 28\nSkill line 29\nSkill line 30\nSkill line 31\nSkill line 32\nSkill line 33\nSkill line 34\nSkill line 35\nSkill line 36\nSkill line 37\nSkill line 38\nSkill line 39"
+    },
+    {
+      "name": "notes.txt",
+      "base64": "77u/TGluZSBvbmUgIA0KDQoNCg0KTGluZSB0d28N",
+      "text": "Line one\n\nLine two"
+    }
   ]
 }

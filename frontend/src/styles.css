@@ -150,3 +150,54 @@ button.link { background: none; color: var(--brand); padding: 10px 4px; }
 .diff-line.added { background: var(--good-bg); }
 .diff-line.removed { background: var(--low-bg); text-decoration: line-through; color: var(--muted); }
 .diff-mark { display: inline-block; width: 16px; color: var(--muted); }
+
+/* mode tabs */
+.modes { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.mode {
+  background: none;
+  color: var(--muted);
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.mode.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+header p { margin-bottom: 14px; }
+
+/* compare resumes */
+.label { font-weight: 600; font-size: 14px; }
+.drop {
+  margin-top: 6px;
+  padding: 16px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+}
+.drop.dragging { border-color: var(--brand); background: #eef4ff; }
+.drop .hint { margin: 8px 0 0; }
+.files { list-style: none; margin: 8px 0 0; padding: 0; max-height: 260px; overflow-y: auto; }
+.files li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.file-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.file-status { color: var(--muted); font-size: 13px; text-align: right; }
+.files .error .file-status { color: var(--low); }
+.files .ready .file-status { color: var(--good); }
+.files button.link { padding: 2px 4px; font-size: 13px; }
+.table-wrap { overflow-x: auto; }
+.ranking { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ranking th, .ranking td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.ranking th { color: var(--muted); font-weight: 600; font-size: 13px; }
+.ranking button.link { padding: 0; }
+.pct { font-weight: 700; }
+.pct.good { color: var(--good); }
+.pct.ok { color: var(--ok); }
+.pct.low { color: var(--low); }
+.detail-row td { background: var(--bg); }
+.detail p { margin: 0 0 8px; }
+[hidden] { display: none !important; }

@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { api, DEMO, MAX_UPLOAD_BYTES } from "./api.js";
+import Compare from "./Compare.jsx";
 import { diffLines, diffSummary } from "./lib/diff.js";
 import sample from "./lib/sample.js";
 
@@ -96,7 +97,7 @@ function download(filename, text) {
   URL.revokeObjectURL(url);
 }
 
-export default function App() {
+function Tailor() {
   const [resume, setResume] = useState("");
   const [job, setJob] = useState("");
   const [analysis, setAnalysis] = useState(null);
@@ -187,21 +188,7 @@ export default function App() {
   const rewritten = Boolean(result && result.rewritten);
 
   return (
-    <div className="page">
-      {DEMO && (
-        <p className="demo-bar no-print" role="status">
-          <strong>Demo.</strong> Runs in your browser; nothing is sent anywhere. Load the sample to
-          see a prepared rewrite.
-        </p>
-      )}
-      <header className="no-print">
-        <h1>AI Resume Builder</h1>
-        <p>
-          Paste your resume and a job post. See how well they match, then get a
-          version tailored to that job.
-        </p>
-      </header>
-
+    <>
       <section className="inputs no-print">
         <div>
           <div className="row">
@@ -213,7 +200,7 @@ export default function App() {
                 className="visually-hidden"
                 tabIndex={-1}
                 aria-hidden="true"
-                accept={DEMO ? ".txt,.md,text/plain" : ".pdf,.docx,.txt,.md"}
+                accept=".pdf,.docx,.txt,.md"
                 onChange={upload}
               />
               <button
@@ -222,7 +209,7 @@ export default function App() {
                 disabled={Boolean(busy)}
                 onClick={() => fileInput.current?.click()}
               >
-                {busy === "upload" ? "Reading…" : DEMO ? "Upload text file" : "Upload PDF or Word"}
+                {busy === "upload" ? "Reading…" : "Upload PDF or Word"}
               </button>
             </div>
           </div>
@@ -376,8 +363,58 @@ export default function App() {
         </section>
       )}
 
+    </>
+  );
+}
+
+const MODES = [
+  ["tailor", "Tailor my resume"],
+  ["compare", "Compare resumes"],
+];
+
+export default function App() {
+  const [mode, setMode] = useState("tailor");
+  return (
+    <div className="page">
+      {DEMO && (
+        <p className="demo-bar no-print" role="status">
+          <strong>Demo.</strong> Runs in your browser; nothing is sent anywhere. Load the sample to
+          see a prepared rewrite.
+        </p>
+      )}
+      <header className="no-print">
+        <h1>AI Resume Builder</h1>
+        <p>
+          {mode === "tailor"
+            ? "Paste your resume and a job post. See how well they match, then get a version tailored to that job."
+            : "Hiring? Add a job post and up to 20 resumes to see which ones match it best."}
+        </p>
+        <div className="modes" role="tablist" aria-label="What would you like to do?">
+          {MODES.map(([value, text]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={mode === value}
+              className={mode === value ? "mode active" : "mode"}
+              onClick={() => setMode(value)}
+            >
+              {text}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* Both stay mounted, so switching tabs never loses pasted text or results. */}
+      <div hidden={mode !== "tailor"}>
+        <Tailor />
+      </div>
+      <div hidden={mode !== "compare"}>
+        <Compare />
+      </div>
+
       <footer className="no-print">
-        This app does not save your resume or uploaded files. AI rewriting sends the text to an AI
+        This app does not save resumes or uploaded files. AI rewriting sends the text to an AI
         provider to produce the result.
       </footer>
     </div>
