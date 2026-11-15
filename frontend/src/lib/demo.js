@@ -3,7 +3,8 @@
 // rewrite is a prepared example for the built-in sample only, because the
 // demo has no AI model.
 import { review } from "./checks.js";
-import { analyze, inventedTerms, suggestions } from "./keywords.js";
+import { extractFile } from "./extract.js";
+import { analyze, extractKeywords, inventedTerms, rankResumes, suggestions } from "./keywords.js";
 import sample from "./sample.js";
 
 const same = (a, b) => a.trim() === b.trim();
@@ -28,13 +29,14 @@ export function createDemoApi() {
         review: review(tailored),
       };
     },
-    extract: async (file) => {
-      if (!/\.(txt|md)$/i.test(file.name) && !file.type.startsWith("text/")) {
-        throw new Error("The demo reads text files only. Paste your resume, or run the full app for PDF and Word.");
-      }
-      const text = (await file.text()).trim();
-      if (!text) throw new Error("No text was found in the file.");
-      return { text, characters: text.length };
-    },
+    rank: async (job, resumes) => ({
+      keywords: extractKeywords(job).length,
+      results: rankResumes(job, resumes).map((r) => ({
+        ...r,
+        review: review(resumes[r.index].text),
+      })),
+    }),
+    // The file is read here in the browser; it is never uploaded.
+    extract: (file) => extractFile(file),
   };
 }

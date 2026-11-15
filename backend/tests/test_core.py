@@ -114,3 +114,21 @@ def test_rate_limiter_blocks_then_recovers():
     assert not limiter.allow("a", now=2)
     assert limiter.allow("b", now=2)
     assert limiter.allow("a", now=11)
+
+
+def test_rank_resumes_orders_by_score_and_keeps_ties_in_order():
+    from app.keywords import rank_resumes
+
+    ranked = rank_resumes(
+        JOB,
+        [
+            {"name": "baker", "text": "I bake bread and cakes."},
+            {"name": "first", "text": RESUME},
+            {"name": "full", "text": JOB},
+            {"name": "second", "text": RESUME},
+        ],
+    )
+    assert [r["name"] for r in ranked] == ["full", "first", "second", "baker"]
+    assert ranked[0]["score"] == 100 and ranked[-1]["score"] == 0
+    assert [r["index"] for r in ranked] == [2, 1, 3, 0]
+    assert set(ranked[1]) == {"index", "name", "score", "matched", "missing", "keywords"}

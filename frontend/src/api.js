@@ -43,6 +43,7 @@ const post = (path, body) =>
 const httpApi = {
   analyze: (resume, job) => post("/analyze", { resume, job }),
   tailor: (resume, job) => post("/tailor", { resume, job }),
+  rank: (job, resumes) => post("/rank", { job, resumes }),
   // The file is sent as the raw request body and read in memory; it is not stored.
   extract: (file) =>
     send(

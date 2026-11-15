@@ -26,11 +26,16 @@ real model yet. See [PLAN.md](PLAN.md) for the product plan, pricing and roadmap
   original is flagged for the user to check.
 - **Show changes**: a line-by-line view of what the rewrite added and removed.
 - **Export**: copy, download as text, or save as PDF.
+- **Compare resumes** (for recruiters): add one job post and up to 20 resumes
+  at once to get a ranked table with each resume's score, missing keywords
+  and review, plus CSV export. The score counts keyword overlap only, so it is
+  a guide to what to read first, not a decision about a candidate.
 
 ## Try the demo
 
 The app has a demo mode that runs entirely in the browser: no backend and no
-AI model. The match score and review work on any text; "Try a sample" loads a
+AI model. The match score, review and resume comparison work on any text or
+file (PDF, Word and text are read in the browser); "Try a sample" loads a
 sample resume with a prepared example rewrite.
 
 ```bash
@@ -71,9 +76,11 @@ backend/   Python + FastAPI (no database)
   app/export_shared.py  writes the word lists and test fixtures the frontend shares
   tests/             pytest tests for the core logic and the HTTP routes
 frontend/  React + Vite
-  src/App.jsx        the single page
-  src/lib/           demo backend (JavaScript ports of keywords.py and checks.py),
-                     line diff; unit tested with node --test
+  src/App.jsx        the page: tailor one resume
+  src/Compare.jsx    compare many resumes against one job post
+  src/lib/           demo backend (JavaScript ports of keywords.py, checks.py and
+                     extract.py), line diff, ranking helpers; unit tested with
+                     node --test
 fixtures/parity.json  inputs with the backend's results; the JavaScript ports
                       must reproduce them exactly
 ```
@@ -138,8 +145,12 @@ name the provider in your privacy policy before launching.
 - The React page has no automated browser tests; only its helper modules
   are unit tested.
 - Scanned PDFs (images of text) cannot be read; the app asks for pasted text.
-- Uploads are limited to 5 MB and 15 PDF pages, 30 per visitor per hour
+- Uploads are limited to 5 MB and 15 PDF pages, 120 per visitor per hour
   (`EXTRACT_LIMIT`).
+- In the demo, PDFs are read with pdf.js in the browser, which can order the
+  text of multi-column layouts differently from the server.
+- Comparing resumes ranks by keyword overlap. It does not judge experience,
+  and it should not be the only reason to reject anyone.
 - The resume review uses fixed rules, so it can misjudge unusual layouts.
 - The rewrite prompt has not been tried against a real model yet; expect to
   tune it.

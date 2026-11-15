@@ -135,6 +135,21 @@ def extract_keywords(job_text: str, max_other: int = 12) -> list[dict]:
     return found + others[:max_other]
 
 
+def rank_resumes(job_text: str, resumes: list[dict]) -> list[dict]:
+    """Score several resumes against one job post, best match first.
+
+    `resumes` is [{"name": str, "text": str}]. Each result carries `index`,
+    the resume's position in that list. Ties keep the order given.
+    The score counts keyword overlap only, so treat the order as a first
+    pass for a person to review, never as a decision about a candidate.
+    """
+    scored = [
+        {"index": i, "name": r["name"], **analyze(r["text"], job_text)}
+        for i, r in enumerate(resumes)
+    ]
+    return sorted(scored, key=lambda r: -r["score"])
+
+
 def analyze(resume_text: str, job_text: str) -> dict:
     """Compare a resume with a job post.
 
