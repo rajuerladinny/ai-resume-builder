@@ -96,3 +96,57 @@ footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 2
     word-wrap: break-word;
   }
 }
+
+/* inputs: upload, counters */
+.inputs > div { min-width: 0; }
+.row.tight { justify-content: flex-end; }
+button.small { padding: 5px 10px; font-size: 13px; }
+button.link { background: none; color: var(--brand); padding: 10px 4px; }
+.count { display: block; text-align: right; color: var(--muted); font-size: 12px; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.demo-bar {
+  background: #fff8e1;
+  border: 1px solid #f1dfa3;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+/* resume review */
+.checks { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.checks li { display: flex; gap: 10px; font-size: 14px; }
+.checks .mark {
+  flex: 0 0 22px;
+  height: 22px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 22px;
+  font-weight: 700;
+  font-size: 13px;
+}
+.checks .pass .mark { background: var(--good-bg); color: var(--good); }
+.checks .fail .mark { background: var(--low-bg); color: var(--low); }
+
+/* changes view */
+.diff {
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 0;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
+  overflow-x: auto;
+}
+.diff-line { padding: 1px 12px; white-space: pre-wrap; word-break: break-word; }
+.diff-line.added { background: var(--good-bg); }
+.diff-line.removed { background: var(--low-bg); text-decoration: line-through; color: var(--muted); }
+.diff-mark { display: inline-block; width: 16px; color: var(--muted); }

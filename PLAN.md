@@ -138,6 +138,9 @@ features.
 - [x] Backend: keyword analysis, tailoring flow, rate limits
 - [x] Frontend: single page with match score, tailored resume, PDF export
 - [x] Dockerfile
+- [x] Resume upload (PDF, .docx, text), read in memory
+- [x] Rule-based resume review; changes view; text download
+- [x] In-browser demo mode; CI for tests, builds and the Docker image
 - [ ] First end-to-end run on a laptop
 - [ ] Connect a real LLM and judge the output on 5 real job posts
 - [ ] Ten test users
