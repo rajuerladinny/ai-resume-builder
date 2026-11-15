@@ -7,11 +7,12 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import keywords, tailor as tailoring
+from . import checks, extract, keywords, tailor as tailoring
 from .ratelimit import RateLimiter
 
 app = FastAPI(title="AI Resume Builder")
@@ -25,6 +26,19 @@ app.add_middleware(
 # Per visitor (IP address). Analysis is free to run; tailoring costs LLM money.
 analyze_limiter = RateLimiter(int(os.environ.get("ANALYZE_LIMIT", "60")), 3600)
 tailor_limiter = RateLimiter(int(os.environ.get("TAILOR_LIMIT", "10")), 3600)
+extract_limiter = RateLimiter(int(os.environ.get("EXTRACT_LIMIT", "30")), 3600)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    if request.url.path.startswith("/api/"):
+        # Responses contain the visitor's resume; never cache them.
+        response.headers.setdefault("Cache-Control", "no-store")
+    return response
 
 
 class ResumeJobIn(BaseModel):
@@ -46,7 +60,7 @@ def client_ip(request: Request) -> str:
 def post_analyze(body: ResumeJobIn, request: Request):
     if not analyze_limiter.allow(client_ip(request)):
         raise HTTPException(429, "Too many requests. Please try again later.")
-    return keywords.analyze(body.resume, body.job)
+    return {**keywords.analyze(body.resume, body.job), "review": checks.review(body.resume)}
 
 
 @app.post("/api/tailor")
@@ -55,7 +69,27 @@ def post_tailor(body: ResumeJobIn, request: Request):
         raise HTTPException(
             429, "You have reached the hourly limit. Please try again later."
         )
-    return tailoring.tailor(body.resume, body.job)
+    result = tailoring.tailor(body.resume, body.job)
+    result["review"] = checks.review(result["tailored"])
+    return result
+
+
+@app.post("/api/extract")
+async def post_extract(request: Request):
+    """Read an uploaded resume (PDF, .docx or text) sent as the raw request body."""
+    if not extract_limiter.allow(client_ip(request)):
+        raise HTTPException(429, "Too many uploads. Please try again later.")
+    data = bytearray()
+    async for chunk in request.stream():
+        data.extend(chunk)
+        if len(data) > extract.MAX_BYTES:
+            raise HTTPException(413, "The file is larger than 5 MB.")
+    try:
+        # Parsing is CPU work; keep it off the event loop.
+        text = await run_in_threadpool(extract.extract_text, bytes(data))
+    except extract.ExtractError as error:
+        raise HTTPException(422, str(error)) from None
+    return {"text": text, "characters": len(text)}
 
 
 @app.get("/api/health")

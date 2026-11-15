@@ -1,0 +1,657 @@
+{
+  "cases": [
+    {
+      "name": "sample",
+      "resume": "Ravi Kumar\nravi.kumar@example.com | +91 98765 43210 | Hyderabad\n\nSUMMARY\nFront-end developer with 6 years of experience building web applications for payments and retail companies.\n\nEXPERIENCE\nAcme Payments, Senior Developer, 2021 to present\n- Built customer screens in ReactJS and TS used by 2 million customers\n- Responsible for the reporting screens that show payment data to merchants\n- Cut page load time by 40% through performance work\n- Wrote automated tests with Jest for every new component\n- Set up pipelines on Jenkins for continuous integration and delivery\n- Mentor for three junior developers\n\nShopline Retail, Developer, 2018 to 2021\n- Worked on the checkout pages for the online store using JavaScript and Redux\n- Built reusable form components shared by 4 teams\n- Fixed accessibility issues found in an external audit\n\nEDUCATION\nB.Tech in Computer Science, JNTU Hyderabad, 2018\n\nSKILLS\nJavaScript, React, Redux, HTML, CSS, Git, Jenkins\n",
+      "job": "Senior Frontend Engineer\n\nWe are looking for a Senior Frontend Engineer with 5+ years of experience in React.js and TypeScript. You will build dashboards for our payments platform and mentor junior engineers. Experience with Next.js, GraphQL and CI/CD pipelines is required. Knowledge of Node.js and AWS is a plus.\n\nResponsibilities: own dashboards end to end, improve performance of the payments dashboards, write unit testing suites with Jest, and mentor engineers. You care about accessibility and responsive design.\n",
+      "analyze": {
+        "score": 43,
+        "matched": [
+          "accessibility",
+          "jest",
+          "react",
+          "typescript",
+          "senior",
+          "front-end",
+          "payment",
+          "mentor"
+        ],
+        "missing": [
+          "aws",
+          "ci/cd",
+          "graphql",
+          "next.js",
+          "node.js",
+          "responsive design",
+          "unit testing",
+          "engineer",
+          "dashboard"
+        ],
+        "keywords": 17
+      },
+      "keywords": [
+        {
+          "term": "accessibility",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "aws",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "ci/cd",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "graphql",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "jest",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "next.js",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "node.js",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "react",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "responsive design",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "typescript",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "unit testing",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "engineer",
+          "kind": "term",
+          "count": 4
+        },
+        {
+          "term": "dashboard",
+          "kind": "term",
+          "count": 3
+        },
+        {
+          "term": "senior",
+          "kind": "term",
+          "count": 2
+        },
+        {
+          "term": "front-end",
+          "kind": "term",
+          "count": 2
+        },
+        {
+          "term": "payment",
+          "kind": "term",
+          "count": 2
+        },
+        {
+          "term": "mentor",
+          "kind": "term",
+          "count": 2
+        }
+      ],
+      "review": {
+        "checks": [
+          {
+            "id": "contact",
+            "ok": true,
+            "title": "Contact details",
+            "detail": "Email and phone number found."
+          },
+          {
+            "id": "sections",
+            "ok": true,
+            "title": "Standard section headings",
+            "detail": "Experience, Education and Skills headings found."
+          },
+          {
+            "id": "bullets",
+            "ok": true,
+            "title": "Bullet points",
+            "detail": "9 bullet points found."
+          },
+          {
+            "id": "numbers",
+            "ok": true,
+            "title": "Results with numbers",
+            "detail": "3 bullet points include a number."
+          },
+          {
+            "id": "length",
+            "ok": false,
+            "title": "Length",
+            "detail": "149 words is short; aim for at least 250."
+          },
+          {
+            "id": "wording",
+            "ok": false,
+            "title": "Strong wording",
+            "detail": "Replace with an action verb: \"responsible for\", \"worked on\"."
+          },
+          {
+            "id": "pronouns",
+            "ok": true,
+            "title": "No first-person pronouns",
+            "detail": "None found."
+          }
+        ],
+        "passed": 5,
+        "total": 7,
+        "words": 149
+      }
+    },
+    {
+      "name": "sample tailored",
+      "resume": "RAVI KUMAR\nravi.kumar@example.com | +91 98765 43210 | Hyderabad\n\nSUMMARY\nSenior front-end engineer with 6 years of experience building React and TypeScript web applications for payments and retail companies.\n\nEXPERIENCE\nAcme Payments, Senior Developer, 2021 to present\n- Built customer dashboards in React and TypeScript used by 2 million customers\n- Own the payments reporting dashboards that show payment data to merchants\n- Improved performance, cutting page load time by 40%\n- Wrote unit testing suites with Jest for every new component\n- Set up CI/CD pipelines on Jenkins\n- Mentor three junior engineers\n\nShopline Retail, Developer, 2018 to 2021\n- Built the checkout pages for the online store using JavaScript and Redux\n- Built reusable form components shared by 4 teams\n- Fixed accessibility issues found in an external audit\n\nEDUCATION\nB.Tech in Computer Science, JNTU Hyderabad, 2018\n\nSKILLS\nReact, TypeScript, JavaScript, Redux, Jest, CI/CD, Jenkins, HTML, CSS, Git, Accessibility\n",
+      "job": "Senior Frontend Engineer\n\nWe are looking for a Senior Frontend Engineer with 5+ years of experience in React.js and TypeScript. You will build dashboards for our payments platform and mentor junior engineers. Experience with Next.js, GraphQL and CI/CD pipelines is required. Knowledge of Node.js and AWS is a plus.\n\nResponsibilities: own dashboards end to end, improve performance of the payments dashboards, write unit testing suites with Jest, and mentor engineers. You care about accessibility and responsive design.\n",
+      "analyze": {
+        "score": 64,
+        "matched": [
+          "accessibility",
+          "ci/cd",
+          "jest",
+          "react",
+          "typescript",
+          "unit testing",
+          "engineer",
+          "dashboard",
+          "senior",
+          "front-end",
+          "payment",
+          "mentor"
+        ],
+        "missing": [
+          "aws",
+          "graphql",
+          "next.js",
+          "node.js",
+          "responsive design"
+        ],
+        "keywords": 17
+      },
+      "keywords": [
+        {
+          "term": "accessibility",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "aws",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "ci/cd",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "graphql",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "jest",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "next.js",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "node.js",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "react",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "responsive design",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "typescript",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "unit testing",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "engineer",
+          "kind": "term",
+          "count": 4
+        },
+        {
+          "term": "dashboard",
+          "kind": "term",
+          "count": 3
+        },
+        {
+          "term": "senior",
+          "kind": "term",
+          "count": 2
+        },
+        {
+          "term": "front-end",
+          "kind": "term",
+          "count": 2
+        },
+        {
+          "term": "payment",
+          "kind": "term",
+          "count": 2
+        },
+        {
+          "term": "mentor",
+          "kind": "term",
+          "count": 2
+        }
+      ],
+      "review": {
+        "checks": [
+          {
+            "id": "contact",
+            "ok": true,
+            "title": "Contact details",
+            "detail": "Email and phone number found."
+          },
+          {
+            "id": "sections",
+            "ok": true,
+            "title": "Standard section headings",
+            "detail": "Experience, Education and Skills headings found."
+          },
+          {
+            "id": "bullets",
+            "ok": true,
+            "title": "Bullet points",
+            "detail": "9 bullet points found."
+          },
+          {
+            "id": "numbers",
+            "ok": true,
+            "title": "Results with numbers",
+            "detail": "3 bullet points include a number."
+          },
+          {
+            "id": "length",
+            "ok": false,
+            "title": "Length",
+            "detail": "151 words is short; aim for at least 250."
+          },
+          {
+            "id": "wording",
+            "ok": true,
+            "title": "Strong wording",
+            "detail": "No weak phrases found."
+          },
+          {
+            "id": "pronouns",
+            "ok": true,
+            "title": "No first-person pronouns",
+            "detail": "None found."
+          }
+        ],
+        "passed": 6,
+        "total": 7,
+        "words": 151
+      }
+    },
+    {
+      "name": "tech tokens and aliases",
+      "resume": "I am responsible for C++/C#, .NET, CI/CD and k8s. My node.js/React.js APIs. Worked on RESTful microservices, springboot and LLMs.\n1. Did 3 things\n* no numbers",
+      "job": "C++ C# .NET ci/cd Kubernetes Node.js React REST API microservices Spring Boot LLM llm. Kubernetes clusters, clusters, 2024 2024, payments Payments PAYMENTS.",
+      "analyze": {
+        "score": 83,
+        "matched": [
+          "kubernetes",
+          "llm",
+          "c#",
+          "c++",
+          "ci/cd",
+          "dotnet",
+          "microservice",
+          "node.js",
+          "react",
+          "spring boot"
+        ],
+        "missing": [
+          "rest api",
+          "payment",
+          "cluster"
+        ],
+        "keywords": 13
+      },
+      "keywords": [
+        {
+          "term": "kubernetes",
+          "kind": "skill",
+          "count": 2
+        },
+        {
+          "term": "llm",
+          "kind": "skill",
+          "count": 2
+        },
+        {
+          "term": "c#",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "c++",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "ci/cd",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "dotnet",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "microservice",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "node.js",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "react",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "rest api",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "spring boot",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "payment",
+          "kind": "term",
+          "count": 3
+        },
+        {
+          "term": "cluster",
+          "kind": "term",
+          "count": 2
+        }
+      ],
+      "review": {
+        "checks": [
+          {
+            "id": "contact",
+            "ok": false,
+            "title": "Contact details",
+            "detail": "Add an email address and a phone number at the top."
+          },
+          {
+            "id": "sections",
+            "ok": false,
+            "title": "Standard section headings",
+            "detail": "Add a heading on its own line for: experience, education, skills."
+          },
+          {
+            "id": "bullets",
+            "ok": false,
+            "title": "Bullet points",
+            "detail": "Only 2 bullet points found. Describe each role in 3 to 6 bullets."
+          },
+          {
+            "id": "numbers",
+            "ok": false,
+            "title": "Results with numbers",
+            "detail": "1 bullet points include a number. Add figures such as users, percentages or time saved, where you have them."
+          },
+          {
+            "id": "length",
+            "ok": false,
+            "title": "Length",
+            "detail": "26 words is short; aim for at least 250."
+          },
+          {
+            "id": "wording",
+            "ok": false,
+            "title": "Strong wording",
+            "detail": "Replace with an action verb: \"responsible for\", \"worked on\"."
+          },
+          {
+            "id": "pronouns",
+            "ok": false,
+            "title": "No first-person pronouns",
+            "detail": "Drop \"I\", \"my\" and \"me\"; start bullets with the verb."
+          }
+        ],
+        "passed": 0,
+        "total": 7,
+        "words": 26
+      }
+    },
+    {
+      "name": "empty job",
+      "resume": "Plain resume text with nothing special.",
+      "job": "",
+      "analyze": {
+        "score": 0,
+        "matched": [],
+        "missing": [],
+        "keywords": 0
+      },
+      "keywords": [],
+      "review": {
+        "checks": [
+          {
+            "id": "contact",
+            "ok": false,
+            "title": "Contact details",
+            "detail": "Add an email address and a phone number at the top."
+          },
+          {
+            "id": "sections",
+            "ok": false,
+            "title": "Standard section headings",
+            "detail": "Add a heading on its own line for: experience, education, skills."
+          },
+          {
+            "id": "bullets",
+            "ok": false,
+            "title": "Bullet points",
+            "detail": "Only 0 bullet points found. Describe each role in 3 to 6 bullets."
+          },
+          {
+            "id": "numbers",
+            "ok": false,
+            "title": "Results with numbers",
+            "detail": "0 bullet points include a number. Add figures such as users, percentages or time saved, where you have them."
+          },
+          {
+            "id": "length",
+            "ok": false,
+            "title": "Length",
+            "detail": "6 words is short; aim for at least 250."
+          },
+          {
+            "id": "wording",
+            "ok": true,
+            "title": "Strong wording",
+            "detail": "No weak phrases found."
+          },
+          {
+            "id": "pronouns",
+            "ok": true,
+            "title": "No first-person pronouns",
+            "detail": "None found."
+          }
+        ],
+        "passed": 2,
+        "total": 7,
+        "words": 6
+      }
+    },
+    {
+      "name": "half-point scores",
+      "resume": "react",
+      "job": "react typescript python java golang docker aws redis",
+      "analyze": {
+        "score": 12,
+        "matched": [
+          "react"
+        ],
+        "missing": [
+          "aws",
+          "docker",
+          "go",
+          "java",
+          "python",
+          "redis",
+          "typescript"
+        ],
+        "keywords": 8
+      },
+      "keywords": [
+        {
+          "term": "aws",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "docker",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "go",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "java",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "python",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "react",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "redis",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "typescript",
+          "kind": "skill",
+          "count": 1
+        }
+      ],
+      "review": {
+        "checks": [
+          {
+            "id": "contact",
+            "ok": false,
+            "title": "Contact details",
+            "detail": "Add an email address and a phone number at the top."
+          },
+          {
+            "id": "sections",
+            "ok": false,
+            "title": "Standard section headings",
+            "detail": "Add a heading on its own line for: experience, education, skills."
+          },
+          {
+            "id": "bullets",
+            "ok": false,
+            "title": "Bullet points",
+            "detail": "Only 0 bullet points found. Describe each role in 3 to 6 bullets."
+          },
+          {
+            "id": "numbers",
+            "ok": false,
+            "title": "Results with numbers",
+            "detail": "0 bullet points include a number. Add figures such as users, percentages or time saved, where you have them."
+          },
+          {
+            "id": "length",
+            "ok": false,
+            "title": "Length",
+            "detail": "1 words is short; aim for at least 250."
+          },
+          {
+            "id": "wording",
+            "ok": true,
+            "title": "Strong wording",
+            "detail": "No weak phrases found."
+          },
+          {
+            "id": "pronouns",
+            "ok": true,
+            "title": "No first-person pronouns",
+            "detail": "None found."
+          }
+        ],
+        "passed": 2,
+        "total": 7,
+        "words": 1
+      }
+    }
+  ],
+  "sample_check": [
+    "ci/cd",
+    "unit testing",
+    "engineer",
+    "dashboard"
+  ]
+}

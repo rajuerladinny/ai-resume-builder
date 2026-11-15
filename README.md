@@ -1,22 +1,81 @@
 # AI Resume Builder
 
-Paste a resume and a job post; get a match score, missing keywords and a
-resume tailored to that job, with one-click PDF export.
+[![Verify](https://github.com/rajuerladinny/ai-resume-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/rajuerladinny/ai-resume-builder/actions/workflows/ci.yml)
+![React 18](https://img.shields.io/badge/React-18-149eca)
+![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.12-009688)
+![No database](https://img.shields.io/badge/storage-none-555)
+![Docker](https://img.shields.io/badge/Docker-one%20container-2496ed)
 
-See [PLAN.md](PLAN.md) for the product plan, pricing and roadmap.
+Paste or upload a resume and a job post; get a match score, missing keywords,
+a resume review and a version tailored to that job, with one-click PDF export.
+
+**Status:** working prototype. The rewrite prompt has not been tuned against a
+real model yet. See [PLAN.md](PLAN.md) for the product plan, pricing and roadmap.
+
+## What it does
+
+- **Match score** from the job post's keywords, calculated without AI, so it
+  is instant, free and repeatable. Skills count double.
+- **Resume review**: seven rule-based checks (contact details, section
+  headings, bullets, results with numbers, length, weak phrases, pronouns),
+  each with a plain instruction for fixing it.
+- **Upload** a PDF, Word (.docx) or text file instead of pasting. Files are
+  read in memory and never stored.
+- **Tailored resume** from an AI model that is told to use only facts already
+  in the resume. Any job keyword that appears in the rewrite but not in the
+  original is flagged for the user to check.
+- **Show changes**: a line-by-line view of what the rewrite added and removed.
+- **Export**: copy, download as text, or save as PDF.
+
+## Try the demo
+
+The app has a demo mode that runs entirely in the browser: no backend and no
+AI model. The match score and review work on any text; "Try a sample" loads a
+sample resume with a prepared example rewrite.
+
+```bash
+cd frontend
+npm install
+npm run dev          # then open http://localhost:5173/?demo
+```
+
+`npm run build:demo` produces a static site in `frontend/dist`; the
+**Deploy demo** workflow publishes it to GitHub Pages.
+
+## How it works
+
+```mermaid
+flowchart LR
+  U[Resume + job post] --> K[Keyword match<br/>no AI]
+  U --> C[Resume review<br/>7 rule-based checks]
+  K --> S[Score, matched, missing]
+  U --> L[AI rewrite<br/>facts from the resume only]
+  L --> G{Guard}
+  G -- too short or failed --> O[Keep the original]
+  G -- ok --> T[Tailored resume]
+  T --> F[Flag keywords the rewrite added]
+  T --> K
+```
 
 ## Project layout
 
 ```
 backend/   Python + FastAPI (no database)
   app/keywords.py    keyword extraction and match score (no AI)
+  app/checks.py      rule-based resume review (no AI)
+  app/extract.py     PDF, .docx and text upload to plain text, in memory
   app/tailor.py      tailoring flow, invented-keyword check, safe fallbacks
   app/llm.py         OpenAI-compatible LLM client and the rewrite prompt
   app/ratelimit.py   per-visitor hourly limits
   app/main.py        HTTP routes
-  tests/             pytest tests for the core logic
+  app/export_shared.py  writes the word lists and test fixtures the frontend shares
+  tests/             pytest tests for the core logic and the HTTP routes
 frontend/  React + Vite
   src/App.jsx        the single page
+  src/lib/           demo backend (JavaScript ports of keywords.py and checks.py),
+                     line diff; unit tested with node --test
+fixtures/parity.json  inputs with the backend's results; the JavaScript ports
+                      must reproduce them exactly
 ```
 
 ## Run the backend
@@ -44,8 +103,18 @@ npm run dev                          # http://localhost:5173
 ## Tests
 
 ```bash
-cd backend && python -m pytest -q
+cd backend && pip install -r requirements-dev.txt && python -m pytest -q
+cd frontend && npm test
 ```
+
+The demo runs JavaScript ports of the scoring and review code. After changing
+`keywords.py`, `checks.py` or `tailor.py`, run `python -m app.export_shared`
+in `backend/`; the tests on both sides fail until the ports give the same
+results as the backend.
+
+CI runs both suites on every push and pull request, builds the frontend
+(normal and demo), builds the Docker image and checks that the container
+serves the API and the app as an unprivileged user.
 
 ## Deploy
 
@@ -59,16 +128,21 @@ hourly limits apply per visitor instead of to the proxy.
 
 ## Privacy
 
-The app keeps nothing: resumes and job posts are handled in memory for one
-request. With a real LLM connected, the text is sent to that provider, so
+The app keeps nothing: resumes, job posts and uploaded files are handled in
+memory for one request, and API responses are sent with `Cache-Control:
+no-store`. With a real LLM connected, the text is sent to that provider, so
 name the provider in your privacy policy before launching.
 
 ## Known gaps
 
-- Only the core Python logic is covered by tests. The HTTP routes, the React
-  app and the Docker build have not been run end to end yet.
+- The React page has no automated browser tests; only its helper modules
+  are unit tested.
+- Scanned PDFs (images of text) cannot be read; the app asks for pasted text.
+- Uploads are limited to 5 MB and 15 PDF pages, 30 per visitor per hour
+  (`EXTRACT_LIMIT`).
+- The resume review uses fixed rules, so it can misjudge unusual layouts.
 - The rewrite prompt has not been tried against a real model yet; expect to
   tune it.
 - The skill list in `keywords.py` covers software roles only.
-- Paste-only input; no PDF or DOCX upload.
+- No .doc (old Word) upload and no .docx download.
 - Limits are per IP address and held in memory, so they reset on restart.
