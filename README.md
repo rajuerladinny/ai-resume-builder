@@ -9,6 +9,8 @@
 Paste or upload a resume and a job post; get a match score, missing keywords,
 a resume review and a version tailored to that job, with one-click PDF export.
 
+**Live demo:** https://rajuerladinny.github.io/ai-resume-builder/ (runs in the browser with sample data; no login)
+
 **Status:** working prototype. The rewrite prompt has not been tuned against a
 real model yet. See [PLAN.md](PLAN.md) for the product plan, pricing and roadmap.
 
