@@ -11,6 +11,7 @@ import {
   extractKeywords,
   inventedTerms,
   normalize,
+  rankJobs,
   rankResumes,
 } from "../src/lib/keywords.js";
 import sample from "../src/lib/sample.js";
@@ -35,12 +36,17 @@ test("ranks resumes in the same order as the backend", () => {
   assert.deepEqual(rankResumes(parity.rank.job, parity.rank.resumes), parity.rank.expected);
 });
 
+test("ranks job posts like the backend", () => {
+  assert.deepEqual(rankJobs(parity.rank_jobs.resume, parity.rank_jobs.jobs), parity.rank_jobs.expected);
+});
+
 for (const file of parity.files) {
-  test(`extracts the same text as the backend: ${file.name}`, async () => {
+  test(`extracts the same text and ATS check as the backend: ${file.name}`, async () => {
     const bytes = new Uint8Array(Buffer.from(file.base64, "base64"));
     assert.deepEqual(await extractBytes(bytes), {
       text: file.text,
       characters: file.text.length,
+      ats: file.ats,
     });
   });
 }

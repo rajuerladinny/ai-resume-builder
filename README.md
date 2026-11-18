@@ -7,7 +7,7 @@
 [![Nothing stored](https://img.shields.io/badge/storage-none-555)](#privacy-and-safeguards)
 [![Live demo](https://img.shields.io/badge/%E2%96%B6%20live%20demo-try%20it%20now-2ea44f.svg)](https://rajuerladinny.github.io/ai-resume-builder/)
 
-A free, open-source tool for job seekers and recruiters. Paste or upload a resume and a job post to get a **match score**, a **resume review**, **bullet-by-bullet advice**, a **tailored resume**, a **cover letter** and **interview questions**, then download it as **Word or PDF**. Nothing is stored, and it works without any AI model; connect one when you want AI rewriting.
+A free, open-source tool for job seekers and recruiters. Check whether applicant tracking systems can **read your resume file**, find the **jobs you fit best**, get a **match score**, **bullet-by-bullet advice**, a **tailored resume**, a **cover letter** and **interview questions**, download them as **Word or PDF**, and **track every application**. Recruiters can rank resumes with **anonymous screening**. Nothing is stored on the server, and it works without any AI model; connect one when you want AI rewriting.
 
 ![Tailoring a resume: match score before and after, keywords found and missing, and the resume review](docs/images/app.png)
 
@@ -17,6 +17,7 @@ A free, open-source tool for job seekers and recruiters. Paste or upload a resum
 
 ## Contents
 
+- [Problems it solves](#problems-it-solves)
 - [Features](#features)
 - [How it works](#how-it-works)
 - [Quick start](#quick-start)
@@ -30,12 +31,27 @@ A free, open-source tool for job seekers and recruiters. Paste or upload a resum
 - [Contributing](#contributing)
 - [License](#license)
 
+## Problems it solves
+
+| Problem | How the app helps |
+|---|---|
+| "I apply and never hear back." Often the resume file can't be read by the company's screening software. | **ATS readability check** finds tables, text boxes, images, header-only contact details, broken characters and column layouts in your PDF or Word file. |
+| "I'm applying everywhere and getting nowhere." | **Best-fit jobs** ranks up to 10 job posts by how well your resume fits, so you put effort where you're most likely to get a reply. |
+| "Tailoring a resume takes an hour per application." | **Match score**, **bullet coach** and **tailored resume** show what's missing and fix it in minutes, without inventing experience. |
+| "I lost track of where I applied and which resume I sent." | **My applications** tracks company, role, date, status, resume version and notes, with your interview rate. |
+| "I don't know what they'll ask me." | **Interview prep** predicts questions from your skills, your gaps and the job post. |
+| "Writing a cover letter for every job is draining." | **Cover letter** drafts one from your resume's own facts. |
+| Recruiters: "Screening 50 resumes takes all day, and first impressions can be biased." | **Compare resumes** ranks up to 20 against the job post, with **anonymous screening** that hides names, contact details and personal details such as age or gender. |
+
 ## Features
 
 ### For job seekers
 
 | Feature | What you get | Needs AI? |
 |---|---|---|
+| **ATS readability check** | After you upload a PDF or Word file: whether screening software can read it, with a fix for each problem (tables, text boxes, images, contact details only in the header, broken characters, columns, page count). | No |
+| **Best-fit jobs** | Paste up to 10 job posts and see which ones your resume fits best, with the missing keywords for each, then tailor for any of them in one click. | No |
+| **My applications** | A tracker for every application: company, role, date, status, link, resume version, notes and match score, with your interview rate, CSV export and backups. Saved only in your browser. | No |
 | **Match score** | How well the resume covers the job post's keywords, as a percentage, with the keywords found and missing. Skills count double. | No |
 | **Resume review** | Seven checks recruiters and applicant tracking systems care about: contact details, section headings, bullets, numbers, length, weak phrases and pronouns. | No |
 | **Bullet coach** | Advice on each weak bullet point: a stronger verb to start with, a missing number, too long or too short. | No |
@@ -47,11 +63,21 @@ A free, open-source tool for job seekers and recruiters. Paste or upload a resum
 | **Remember on this device** | Opt-in: keeps your resume and job post in your own browser for next time. | No |
 | **Light and dark themes** | Follows your system, or choose one. | No |
 
+| ATS readability check | Best-fit jobs |
+|---|---|
+| ![ATS check of a Word file that uses a table, a text box, images and a header for contact details](docs/images/ats-check.png) | ![Three job posts ranked by fit, with missing keywords and buttons to tailor or save each](docs/images/best-fit-jobs.png) |
+
+![My applications: counts by status, interview rate, and a list of applications with status menus](docs/images/my-applications.png)
+
 ![Interview prep: questions grouped by your skills, your gaps and themes from the job post](docs/images/interview-prep.png)
 
 ### For recruiters
 
 **Compare resumes**: add one job post and up to 20 resumes to get a ranked table with each resume's score, missing keywords and review, plus CSV export. The score counts keyword overlap only, so treat it as a guide to what to read first, never as a decision about a candidate.
+
+**Anonymous screening**: one tick replaces file names with "Candidate 1, 2, 3…" and lets you read each resume with the name, email, phone, links and personal details (date of birth, age, gender, marital status, nationality, religion, address) removed. Scores are always calculated on the full text, so turning it on or off never changes the ranking. Untick it once you have a shortlist.
+
+![Anonymous screening: candidates listed by number, and a resume shown with name and contact details removed](docs/images/anonymous-screening.png)
 
 | Cover letter (dark theme) | PDF export |
 |---|---|
@@ -67,14 +93,16 @@ One React page talks to one FastAPI server. The server keeps nothing: every requ
 flowchart TB
     subgraph Browser["Browser: React 19 app"]
         T["Tailor my resume<br/>score, review, bullet coach,<br/>interview prep, cover letter"]
-        C["Compare resumes<br/>rank up to 20"]
+        J["Best-fit jobs<br/>rank up to 10 job posts"]
+        A["My applications<br/>tracker in the browser"]
+        C["Compare resumes<br/>anonymous screening"]
         X["Word and PDF export<br/>built in the browser"]
     end
 
     subgraph API["FastAPI server: backend/app"]
         K["keywords.py<br/>match score"]
         R["checks.py<br/>resume review"]
-        E["extract.py<br/>PDF and Word upload"]
+        E["extract.py + ats.py<br/>upload and ATS check"]
         TL["tailor.py<br/>rewrite + safeguards"]
         CL["cover_letter.py<br/>AI or template"]
     end
@@ -82,6 +110,7 @@ flowchart TB
     M["AI model, optional<br/>any OpenAI-compatible API"]
 
     T --> API
+    J --> API
     C --> API
     TL -.-> M
     CL -.-> M
@@ -199,7 +228,8 @@ Interactive docs are served at `/docs`. All `POST` bodies are JSON except `/api/
 | `POST /api/tailor` | `{resume, job}` | Tailored resume, scores before and after, flagged keywords, review |
 | `POST /api/cover-letter` | `{resume, job}` | `{letter, ai, notice, check}` |
 | `POST /api/rank` | `{job, resumes: [{name, text}]}` (up to 20) | Ranked results with reviews |
-| `POST /api/extract` | The file's raw bytes (PDF, .docx or text, up to 5 MB) | `{text, characters}` |
+| `POST /api/rank-jobs` | `{resume, jobs: [{name, text}]}` (up to 10) | Job posts ranked by fit, with matched and missing keywords |
+| `POST /api/extract` | The file's raw bytes (PDF, .docx or text, up to 5 MB) | `{text, characters, ats}`, where `ats` is the readability check |
 | `GET /api/health` | none | `{ok, version, ai}`, where `ai` is `"ai"` or `"mock"` |
 
 Resumes must be 100 to 20,000 characters and job posts 100 to 10,000. Limits return HTTP 429; invalid input returns 422 with a readable message.
@@ -212,7 +242,8 @@ Resumes must be 100 to 20,000 characters and job posts 100 to 10,000. Limits ret
 - **Safe fallbacks.** If the model fails, times out or returns something much shorter than the original, the user gets their original resume or the template letter, never an error page or a truncated document.
 - **Abuse limits.** Per-visitor hourly limits, a 5 MB upload cap, a 15-page PDF cap and request size limits.
 - **Hardened container.** Runs as an unprivileged user, writes nothing to disk, and has a health check. Security headers (`nosniff`, `DENY` framing, no referrer) are on every response.
-- **"Remember on this device" is opt-in** and keeps data only in the visitor's own browser; unticking it deletes it.
+- **"Remember on this device" is opt-in** and keeps data only in the visitor's own browser; unticking it deletes it. **My applications** is also stored only in the browser, with backup files the visitor controls.
+- **Anonymous screening never changes scores**: ranking always uses the full text; only what the reviewer sees is redacted.
 - **AI providers.** With an AI model connected, resume text is sent to that provider. Choose one whose data terms suit you, or run a local model.
 
 To report a security issue privately, see [SECURITY.md](SECURITY.md).
@@ -225,7 +256,7 @@ cd frontend && npm test                                # JavaScript tests
 cd frontend && npm run build && npm run build:demo     # production and demo builds
 ```
 
-The demo runs JavaScript ports of the scoring, review and template cover letter code. After changing `keywords.py`, `checks.py`, `tailor.py` or `cover_letter.py`, run `python -m app.export_shared` in `backend/`; tests on both sides fail until the two give the same results.
+The demo runs JavaScript ports of the scoring, review and template cover letter code. After changing `keywords.py`, `checks.py`, `tailor.py`, `cover_letter.py`, `extract.py` or `ats.py`, run `python -m app.export_shared` in `backend/`; tests on both sides fail until the two give the same results.
 
 CI runs on every push and pull request: lint, both test suites, both frontend builds, and a Docker build that checks the container serves the page, the API and a cover letter as an unprivileged user. Dependabot proposes dependency updates monthly.
 
@@ -238,11 +269,12 @@ CI runs on every push and pull request: lint, both test suites, both frontend bu
 - [x] Cover letters (AI or template), bullet coach, interview prep
 - [x] Word and PDF export, light and dark themes, opt-in saving on the device
 - [x] Docker image, Render blueprint, CI with lint and container checks
+- [x] ATS readability check, best-fit jobs, application tracker, anonymous screening
 - [ ] Tune the AI prompts against several open and hosted models
 - [ ] Skill lists for roles beyond software (sales, finance, healthcare, design)
 - [ ] Section-aware rewriting, so employers and dates can never change
 - [ ] Browser tests for the React page
-- [ ] Optional accounts with saved resumes and an application tracker
+- [ ] Optional accounts, so saved resumes and the tracker sync across devices
 - [ ] More languages
 
 Have an idea? Open an [issue](https://github.com/rajuerladinny/ai-resume-builder/issues).
@@ -254,6 +286,9 @@ Have an idea? Open an [issue](https://github.com/rajuerladinny/ai-resume-builder
 - The resume review uses fixed rules, so unusual layouts can be misjudged.
 - Scanned PDFs (images of text) cannot be read; paste the text instead. Old `.doc` files are not supported.
 - In the demo, PDFs are read with pdf.js, which can order multi-column text differently from the server.
+- The ATS check reads the file's structure with rules. Real systems differ, so a pass is a good sign, not a guarantee. Column detection is a heuristic based on many very short lines.
+- Anonymous screening removes common identifying details but cannot catch everything, such as a name written only inside a project description or a college that hints at background.
+- My applications lives in one browser. Clearing site data deletes it, so download a backup now and then.
 - Rate limits are per IP address and held in memory, so they reset on restart and assume a single server process.
 - AI output can still be wrong even with the safeguards. Read everything before you send it.
 

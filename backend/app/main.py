@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import __version__, checks, cover_letter, extract, keywords, llm
+from . import __version__, ats, checks, cover_letter, extract, keywords, llm
 from . import tailor as tailoring
 from .ratelimit import RateLimiter
 
@@ -52,6 +52,7 @@ analyze_limiter = RateLimiter(_limit("ANALYZE_LIMIT", 60), 3600)
 tailor_limiter = RateLimiter(_limit("TAILOR_LIMIT", 10), 3600)
 extract_limiter = RateLimiter(_limit("EXTRACT_LIMIT", 120), 3600)
 MAX_COMPARE = 20
+MAX_JOBS = 10
 
 
 @app.middleware("http")
@@ -79,6 +80,16 @@ class ResumeItem(BaseModel):
 class RankIn(BaseModel):
     job: str = Field(min_length=100, max_length=10_000)
     resumes: list[ResumeItem] = Field(min_length=1, max_length=MAX_COMPARE)
+
+
+class JobItem(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    text: str = Field(min_length=50, max_length=10_000)
+
+
+class RankJobsIn(BaseModel):
+    resume: str = Field(min_length=100, max_length=20_000)
+    jobs: list[JobItem] = Field(min_length=1, max_length=MAX_JOBS)
 
 
 def client_ip(request: Request) -> str:
@@ -133,9 +144,19 @@ def post_rank(body: RankIn, request: Request):
     }
 
 
+@app.post("/api/rank-jobs")
+def post_rank_jobs(body: RankJobsIn, request: Request):
+    """Score one resume against up to 10 job posts, best fit first."""
+    if not analyze_limiter.allow(client_ip(request)):
+        raise HTTPException(429, "Too many requests. Please try again later.")
+    return {"results": keywords.rank_jobs(body.resume, [j.model_dump() for j in body.jobs])}
+
+
 @app.post("/api/extract")
 async def post_extract(request: Request):
-    """Read an uploaded resume (PDF, .docx or text) sent as the raw request body."""
+    """Read an uploaded resume (PDF, .docx or text) sent as the raw request body.
+
+    Also returns an ATS readability check of the file's layout."""
     if not extract_limiter.allow(client_ip(request)):
         raise HTTPException(429, "Too many uploads. Please try again later.")
     data = bytearray()
@@ -145,10 +166,10 @@ async def post_extract(request: Request):
             raise HTTPException(413, "The file is larger than 5 MB.")
     try:
         # Parsing is CPU work; keep it off the event loop.
-        text = await run_in_threadpool(extract.extract_text, bytes(data))
+        text, facts = await run_in_threadpool(extract.extract_file, bytes(data))
     except extract.ExtractError as error:
         raise HTTPException(422, str(error)) from None
-    return {"text": text, "characters": len(text)}
+    return {"text": text, "characters": len(text), "ats": ats.ats_check(text, facts)}
 
 
 @app.get("/api/health")

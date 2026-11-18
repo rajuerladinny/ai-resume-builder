@@ -182,3 +182,16 @@ def analyze(resume_text: str, job_text: str) -> dict:
         "missing": missing,
         "keywords": len(keywords),
     }
+
+
+def rank_jobs(resume_text: str, jobs: list[dict]) -> list[dict]:
+    """Score one resume against several job posts, best fit first.
+
+    `jobs` is [{"name": str, "text": str}]. Each result carries `index`, the
+    job's position in that list. Ties keep the order given.
+    """
+    scored = [
+        {"index": i, "name": j["name"], **analyze(resume_text, j["text"])}
+        for i, j in enumerate(jobs)
+    ]
+    return sorted(scored, key=lambda r: -r["score"])

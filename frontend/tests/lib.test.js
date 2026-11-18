@@ -54,7 +54,9 @@ test("demo: other text is analysed but never rewritten", async () => {
 test("demo: text files are read in the browser; bad files are refused", async () => {
   const api = createDemoApi();
   const text = new File(["  My resume text  "], "resume.txt", { type: "text/plain" });
-  assert.deepEqual(await api.extract(text), { text: "My resume text", characters: 14 });
+  const read = await api.extract(text);
+  assert.deepEqual([read.text, read.characters], ["My resume text", 14]);
+  assert.equal(read.ats.checks[0].id, "file");
   const binary = new File([new Uint8Array([0, 1, 2, 3])], "photo.png");
   await assert.rejects(api.extract(binary), /Upload a PDF/);
   const brokenWord = new File([new Uint8Array([0x50, 0x4b, 3, 4, 9, 9, 9])], "cv.docx");

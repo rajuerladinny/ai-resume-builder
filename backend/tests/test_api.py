@@ -44,11 +44,19 @@ def test_short_or_missing_input_is_rejected(client):
 
 def test_extract_reads_text_and_word_files(client):
     text = client.post("/api/extract", content=b"Ravi Kumar\r\nDeveloper")
-    assert text.json() == {"text": "Ravi Kumar\nDeveloper", "characters": 20}
+    body = text.json()
+    assert (body["text"], body["characters"]) == ("Ravi Kumar\nDeveloper", 20)
+    assert body["ats"]["checks"][0] == {
+        "id": "file",
+        "ok": False,
+        "title": "File type",
+        "detail": "Plain text is fine for checking here, but send employers a PDF or Word file.",
+    }
     word = client.post(
         "/api/extract", content=docx("<w:p><w:r><w:t>Ravi Kumar</w:t></w:r></w:p>")
     )
     assert word.json()["text"] == "Ravi Kumar"
+    assert {c["id"] for c in word.json()["ats"]["checks"]} >= {"tables", "text_boxes", "images"}
 
 
 def test_extract_rejects_bad_and_oversized_files(client):
@@ -130,3 +138,23 @@ def test_bad_limit_settings_stop_startup(monkeypatch, value):
     monkeypatch.setenv("TAILOR_LIMIT", value)
     with pytest.raises(RuntimeError, match="TAILOR_LIMIT"):
         main._limit("TAILOR_LIMIT", 10)
+
+
+def test_rank_jobs_orders_job_posts_by_fit(client):
+    bakery = "Bakery assistant wanted. Bread, cakes, ovens and early mornings. " * 2
+    body = {"resume": RESUME, "jobs": [{"name": "Baker", "text": bakery}, {"name": "Frontend", "text": JOB}]}
+    res = client.post("/api/rank-jobs", json=body)
+    assert res.status_code == 200
+    results = res.json()["results"]
+    assert [r["name"] for r in results] == ["Frontend", "Baker"]
+    assert [r["index"] for r in results] == [1, 0]
+    assert results[0]["score"] > results[1]["score"]
+    assert "graphql" in results[0]["missing"]
+
+
+def test_rank_jobs_limits(client):
+    one = {"name": "Job", "text": JOB}
+    assert client.post("/api/rank-jobs", json={"resume": RESUME, "jobs": [one] * (main.MAX_JOBS + 1)}).status_code == 422
+    assert client.post("/api/rank-jobs", json={"resume": RESUME, "jobs": []}).status_code == 422
+    assert client.post("/api/rank-jobs", json={"resume": "short", "jobs": [one]}).status_code == 422
+    assert client.post("/api/rank-jobs", json={"resume": RESUME, "jobs": [{"name": "J", "text": "tiny"}]}).status_code == 422
