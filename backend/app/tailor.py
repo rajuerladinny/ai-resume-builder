@@ -1,8 +1,11 @@
 """Tailoring flow: analyse, rewrite, analyse again, flag anything invented."""
-from typing import Callable
+import logging
+from collections.abc import Callable
 
 from . import llm
 from .keywords import analyze, normalize
+
+logger = logging.getLogger(__name__)
 
 
 def invented_terms(original: str, tailored: str, job: str) -> list[str]:
@@ -34,7 +37,8 @@ def tailor(
     try:
         tailored = rewrite(resume, job, before["missing"]) or resume.strip()
         failed = False
-    except Exception:
+    except Exception as error:
+        logger.warning("LLM request failed: %s", type(error).__name__)
         tailored, failed = resume.strip(), True
     # A reply far shorter than the original means the model dropped content.
     if len(normalize(tailored)) < 0.5 * len(normalize(resume)):

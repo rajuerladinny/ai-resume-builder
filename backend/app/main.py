@@ -1,7 +1,7 @@
 """FastAPI routes. Run with: uvicorn app.main:app --reload
 
 Nothing is stored: resumes and job posts are processed in memory and
-discarded when the request ends.
+discarded when the request ends. Interactive API docs are served at /docs.
 """
 import os
 from pathlib import Path
@@ -12,21 +12,45 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import checks, extract, keywords, tailor as tailoring
+from . import __version__, checks, cover_letter, extract, keywords, llm
+from . import tailor as tailoring
 from .ratelimit import RateLimiter
 
-app = FastAPI(title="AI Resume Builder")
+
+def _limit(name: str, default: int) -> int:
+    """A per-visitor hourly limit from the environment, checked at startup."""
+    raw = os.environ.get(name, str(default))
+    try:
+        value = int(raw)
+    except ValueError:
+        raise RuntimeError(f"{name} must be a whole number, not {raw!r}.") from None
+    if value < 1:
+        raise RuntimeError(f"{name} must be at least 1.")
+    return value
+
+
+# Fail at startup, not on a visitor's first request, when settings are wrong.
+_config_errors = llm.config_errors()
+if _config_errors:
+    raise RuntimeError("Invalid configuration: " + " ".join(_config_errors))
+
+app = FastAPI(
+    title="AI Resume Builder",
+    version=__version__,
+    description="Match score, resume review, tailoring and cover letters. Nothing is stored.",
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(","),
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[o.strip() for o in os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(",") if o.strip()],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
-# Per visitor (IP address). Analysis is free to run; tailoring costs LLM money.
-analyze_limiter = RateLimiter(int(os.environ.get("ANALYZE_LIMIT", "60")), 3600)
-tailor_limiter = RateLimiter(int(os.environ.get("TAILOR_LIMIT", "10")), 3600)
-extract_limiter = RateLimiter(int(os.environ.get("EXTRACT_LIMIT", "120")), 3600)
+# Per visitor (IP address), per hour. Analysis is free to run; tailoring and
+# cover letters cost LLM money.
+analyze_limiter = RateLimiter(_limit("ANALYZE_LIMIT", 60), 3600)
+tailor_limiter = RateLimiter(_limit("TAILOR_LIMIT", 10), 3600)
+extract_limiter = RateLimiter(_limit("EXTRACT_LIMIT", 120), 3600)
 MAX_COMPARE = 20
 
 
@@ -85,6 +109,16 @@ def post_tailor(body: ResumeJobIn, request: Request):
     return result
 
 
+@app.post("/api/cover-letter")
+def post_cover_letter(body: ResumeJobIn, request: Request):
+    """A cover letter for this job, from the resume's facts only."""
+    if not tailor_limiter.allow(client_ip(request)):
+        raise HTTPException(
+            429, "You have reached the hourly limit. Please try again later."
+        )
+    return cover_letter.cover_letter(body.resume, body.job)
+
+
 @app.post("/api/rank")
 def post_rank(body: RankIn, request: Request):
     """Score up to 20 resumes against one job post, best match first."""
@@ -119,7 +153,8 @@ async def post_extract(request: Request):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True}
+    """Liveness check. "ai" says whether a model is connected ("ai") or not ("mock")."""
+    return {"ok": True, "version": __version__, "ai": llm.mode()}
 
 
 # Serve the built React app when it exists (single-container deployment).

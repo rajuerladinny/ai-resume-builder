@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { review } from "../src/lib/checks.js";
+import { templateLetter } from "../src/lib/coverLetter.js";
 import { extractBytes } from "../src/lib/extract.js";
 import {
   analyze,
@@ -22,6 +23,7 @@ for (const c of parity.cases) {
     assert.deepEqual(extractKeywords(c.job), c.keywords);
     assert.deepEqual(analyze(c.resume, c.job), c.analyze);
     assert.deepEqual(review(c.resume), c.review);
+    assert.equal(templateLetter(c.resume, c.job), c.letter);
   });
 }
 

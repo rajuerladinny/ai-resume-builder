@@ -3,6 +3,7 @@
 // rewrite is a prepared example for the built-in sample only, because the
 // demo has no AI model.
 import { review } from "./checks.js";
+import { templateLetter } from "./coverLetter.js";
 import { extractFile } from "./extract.js";
 import { analyze, extractKeywords, inventedTerms, rankResumes, suggestions } from "./keywords.js";
 import sample from "./sample.js";
@@ -29,6 +30,13 @@ export function createDemoApi() {
         review: review(tailored),
       };
     },
+    coverLetter: async (resume, job) => ({
+      letter: templateLetter(resume, job),
+      ai: false,
+      notice:
+        "The demo has no AI model, so this letter was built from a template using your resume's own bullet points. Edit it before sending.",
+      check: [],
+    }),
     rank: async (job, resumes) => ({
       keywords: extractKeywords(job).length,
       results: rankResumes(job, resumes).map((r) => ({

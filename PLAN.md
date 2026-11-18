@@ -142,6 +142,8 @@ features.
 - [x] Rule-based resume review; changes view; text download
 - [x] In-browser demo mode; CI for tests, builds and the Docker image
 - [x] Compare resumes: rank up to 20 resumes against one job post (recruiter use)
+- [x] v1.0: cover letters, bullet coach, interview prep, Word and PDF export, dark mode
+- [x] Open-source readiness: license, contributing and security guides, deployment guide
 - [ ] First end-to-end run on a laptop
 - [ ] Connect a real LLM and judge the output on 5 real job posts
 - [ ] Ten test users
