@@ -6,7 +6,7 @@ pytest.importorskip("httpx")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app import extract, main  # noqa: E402
+from app import __version__, extract, main  # noqa: E402
 from tests.test_checks_extract import docx  # noqa: E402
 from tests.test_core import JOB, RESUME  # noqa: E402
 
@@ -93,6 +93,7 @@ def test_rank_limits_the_number_of_resumes(client):
 def test_rate_limits(client, monkeypatch):
     monkeypatch.setattr(main.tailor_limiter, "limit", 0)
     assert client.post("/api/tailor", json={"resume": RESUME, "job": JOB}).status_code == 429
+    assert client.post("/api/cover-letter", json={"resume": RESUME, "job": JOB}).status_code == 429
     monkeypatch.setattr(main.extract_limiter, "limit", 0)
     assert client.post("/api/extract", content=b"text").status_code == 429
     monkeypatch.setattr(main.analyze_limiter, "limit", 0)
@@ -101,8 +102,31 @@ def test_rate_limits(client, monkeypatch):
 
 def test_security_headers_and_health(client):
     res = client.get("/api/health")
-    assert res.json() == {"ok": True}
+    assert res.json() == {"ok": True, "version": __version__, "ai": "mock"}
     assert res.headers["x-content-type-options"] == "nosniff"
     assert res.headers["x-frame-options"] == "DENY"
     assert res.headers["cache-control"] == "no-store"
     assert res.headers["referrer-policy"] == "no-referrer"
+
+
+def test_cover_letter_in_mock_mode_uses_the_template(client):
+    res = client.post("/api/cover-letter", json={"resume": RESUME, "job": JOB})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["ai"] is False
+    assert body["check"] == []
+    assert body["letter"].startswith("Dear Hiring Manager,")
+    assert "Senior Frontend Engineer" in body["letter"]
+    assert "template" in body["notice"]
+    assert client.post("/api/cover-letter", json={"resume": "short", "job": JOB}).status_code == 422
+
+
+def test_limit_settings_are_checked():
+    assert main._limit("NOT_SET_ANYWHERE", 7) == 7
+
+
+@pytest.mark.parametrize("value", ["ten", "0", "-3"])
+def test_bad_limit_settings_stop_startup(monkeypatch, value):
+    monkeypatch.setenv("TAILOR_LIMIT", value)
+    with pytest.raises(RuntimeError, match="TAILOR_LIMIT"):
+        main._limit("TAILOR_LIMIT", 10)

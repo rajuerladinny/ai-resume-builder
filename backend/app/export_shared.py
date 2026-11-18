@@ -6,7 +6,7 @@
 - fixtures/parity.json: inputs with this backend's results, which the
   JavaScript ports used by the in-browser demo must reproduce exactly
 
-Run it after changing keywords.py, checks.py or tailor.py.
+Run it after changing keywords.py, checks.py, tailor.py or cover_letter.py.
 tests/test_shared.py fails when either file is out of date.
 """
 import base64
@@ -15,7 +15,7 @@ import json
 import zipfile
 from pathlib import Path
 
-from . import checks, extract, keywords, tailor
+from . import checks, cover_letter, extract, keywords, tailor
 
 ROOT = Path(__file__).resolve().parents[2]
 VOCAB_PATH = ROOT / "frontend" / "src" / "lib" / "vocab.js"
@@ -37,6 +37,18 @@ EXTRA_CASES = [
         "name": "half-point scores",
         "resume": "react",
         "job": "react typescript python java golang docker aws redis",
+    },
+    {
+        "name": "letter: capitalised name, title prefix, numbered bullets",
+        "resume": "  ASHA O'NEIL-RAO \nasha@example.com\n\n1. Led the Python and AWS migration for 3 teams.\n"
+        "2) Built Docker images for 12 services using Python\n- Responsible for Python code reviews\n"
+        "- Python\n* Shipped a Kubernetes and AWS platform used by 40 engineers",
+        "job": "Job title: Platform Engineer\nWe need Python, AWS, Kubernetes and Docker. Python daily.",
+    },
+    {
+        "name": "letter: no name, sentence first line, no bullets",
+        "resume": "Experienced engineer 2024\nI know Go and Rust.",
+        "job": "We are hiring a backend engineer. Go and Rust required.",
     },
 ]
 
@@ -60,6 +72,7 @@ def parity() -> dict:
         case["analyze"] = keywords.analyze(case["resume"], case["job"])
         case["keywords"] = keywords.extract_keywords(case["job"])
         case["review"] = checks.review(case["resume"])
+        case["letter"] = cover_letter.template_letter(case["resume"], case["job"])
     candidates = [
         {"name": "weak.txt", "text": "I bake bread and cakes."},
         {"name": "original.pdf", "text": sample["resume"]},

@@ -11,7 +11,7 @@ const SECTIONS = {
   skills: /^\W*(?:technical |key |core )?skills\b/i,
 };
 const WORD = /[^ \t\n\r\f\v]+/g;
-const WEAK = [
+export const WEAK_PHRASES = [
   "responsible for",
   "worked on",
   "helped with",
@@ -34,7 +34,7 @@ export function review(resume) {
     .filter(([, pattern]) => !lines.some((line) => pattern.test(line) && wordCount(line) <= 4))
     .map(([name]) => name);
   const lowered = resume.toLowerCase();
-  const weak = WEAK.filter((phrase) => lowered.includes(phrase));
+  const weak = WEAK_PHRASES.filter((phrase) => lowered.includes(phrase));
   const hasEmail = EMAIL.test(resume);
   const hasPhone = PHONE.test(resume);
   const hasPronoun = PRONOUN.test(resume);

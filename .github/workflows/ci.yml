@@ -69,6 +69,8 @@ jobs:
           curl -fsS http://127.0.0.1:8000/api/health | grep -q '"ok":true'
           curl -fsS http://127.0.0.1:8000/ | grep -q '<div id="root">'
           printf 'Ravi Kumar\nDeveloper' | curl -fsS --data-binary @- -H 'Content-Type: application/octet-stream' http://127.0.0.1:8000/api/extract | grep -q '"characters":20'
+          python3 -c "import json; r = open('fixtures/parity.json').read(); c = json.loads(r)['cases'][0]; print(json.dumps({'resume': c['resume'], 'job': c['job']}))" > body.json
+          curl -fsS -H 'Content-Type: application/json' --data @body.json http://127.0.0.1:8000/api/cover-letter | grep -q 'Dear Hiring Manager'
           test "$(docker exec app id -un)" = "app"
       - if: always()
         run: docker logs app || true

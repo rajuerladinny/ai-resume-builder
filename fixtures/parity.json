@@ -164,7 +164,8 @@
         "passed": 5,
         "total": 7,
         "words": 149
-      }
+      },
+      "letter": "Dear Hiring Manager,\n\nI am writing to apply for the Senior Frontend Engineer role. My experience with React, TypeScript, Jest and accessibility matches what you are looking for.\n\nA few highlights from my recent work:\n- Built customer screens in ReactJS and TS used by 2 million customers\n- Wrote automated tests with Jest for every new component\n- Mentor for three junior developers\n\nI would welcome the chance to talk about how I can help your team. Thank you for your time and consideration.\n\nSincerely,\nRavi Kumar"
     },
     {
       "name": "sample tailored",
@@ -330,7 +331,8 @@
         "passed": 6,
         "total": 7,
         "words": 151
-      }
+      },
+      "letter": "Dear Hiring Manager,\n\nI am writing to apply for the Senior Frontend Engineer role. My experience with React, TypeScript, CI/CD and unit testing matches what you are looking for.\n\nA few highlights from my recent work:\n- Built customer dashboards in React and TypeScript used by 2 million customers\n- Own the payments reporting dashboards that show payment data to merchants\n- Wrote unit testing suites with Jest for every new component\n\nI would welcome the chance to talk about how I can help your team. Thank you for your time and consideration.\n\nSincerely,\nRavi Kumar"
     },
     {
       "name": "tech tokens and aliases",
@@ -472,7 +474,8 @@
         "passed": 0,
         "total": 7,
         "words": 26
-      }
+      },
+      "letter": "Dear Hiring Manager,\n\nI am writing to apply for this role. My experience with C++, C#, ci/cd and Kubernetes matches what you are looking for.\n\nI would welcome the chance to talk about how I can help your team. Thank you for your time and consideration.\n\nSincerely,\n[Your name]"
     },
     {
       "name": "empty job",
@@ -533,7 +536,8 @@
         "passed": 2,
         "total": 7,
         "words": 6
-      }
+      },
+      "letter": "Dear Hiring Manager,\n\nI am writing to apply for this role.\n\nI would welcome the chance to talk about how I can help your team. Thank you for your time and consideration.\n\nSincerely,\n[Your name]"
     },
     {
       "name": "half-point scores",
@@ -645,7 +649,172 @@
         "passed": 2,
         "total": 7,
         "words": 1
-      }
+      },
+      "letter": "Dear Hiring Manager,\n\nI am writing to apply for the react typescript python java golang docker aws redis role. My experience with react matches what you are looking for.\n\nI would welcome the chance to talk about how I can help your team. Thank you for your time and consideration.\n\nSincerely,\n[Your name]"
+    },
+    {
+      "name": "letter: capitalised name, title prefix, numbered bullets",
+      "resume": "  ASHA O'NEIL-RAO \nasha@example.com\n\n1. Led the Python and AWS migration for 3 teams.\n2) Built Docker images for 12 services using Python\n- Responsible for Python code reviews\n- Python\n* Shipped a Kubernetes and AWS platform used by 40 engineers",
+      "job": "Job title: Platform Engineer\nWe need Python, AWS, Kubernetes and Docker. Python daily.",
+      "analyze": {
+        "score": 100,
+        "matched": [
+          "python",
+          "aws",
+          "docker",
+          "kubernetes"
+        ],
+        "missing": [],
+        "keywords": 4
+      },
+      "keywords": [
+        {
+          "term": "python",
+          "kind": "skill",
+          "count": 2
+        },
+        {
+          "term": "aws",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "docker",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "kubernetes",
+          "kind": "skill",
+          "count": 1
+        }
+      ],
+      "review": {
+        "checks": [
+          {
+            "id": "contact",
+            "ok": false,
+            "title": "Contact details",
+            "detail": "Add a phone number at the top."
+          },
+          {
+            "id": "sections",
+            "ok": false,
+            "title": "Standard section headings",
+            "detail": "Add a heading on its own line for: experience, education, skills."
+          },
+          {
+            "id": "bullets",
+            "ok": true,
+            "title": "Bullet points",
+            "detail": "5 bullet points found."
+          },
+          {
+            "id": "numbers",
+            "ok": true,
+            "title": "Results with numbers",
+            "detail": "3 bullet points include a number."
+          },
+          {
+            "id": "length",
+            "ok": false,
+            "title": "Length",
+            "detail": "41 words is short; aim for at least 250."
+          },
+          {
+            "id": "wording",
+            "ok": false,
+            "title": "Strong wording",
+            "detail": "Replace with an action verb: \"responsible for\"."
+          },
+          {
+            "id": "pronouns",
+            "ok": true,
+            "title": "No first-person pronouns",
+            "detail": "None found."
+          }
+        ],
+        "passed": 3,
+        "total": 7,
+        "words": 41
+      },
+      "letter": "Dear Hiring Manager,\n\nI am writing to apply for the Platform Engineer role. My experience with Python, AWS, Kubernetes and Docker matches what you are looking for.\n\nA few highlights from my recent work:\n- Led the Python and AWS migration for 3 teams\n- Built Docker images for 12 services using Python\n- Shipped a Kubernetes and AWS platform used by 40 engineers\n\nI would welcome the chance to talk about how I can help your team. Thank you for your time and consideration.\n\nSincerely,\nAsha O'Neil-Rao"
+    },
+    {
+      "name": "letter: no name, sentence first line, no bullets",
+      "resume": "Experienced engineer 2024\nI know Go and Rust.",
+      "job": "We are hiring a backend engineer. Go and Rust required.",
+      "analyze": {
+        "score": 100,
+        "matched": [
+          "go",
+          "rust"
+        ],
+        "missing": [],
+        "keywords": 2
+      },
+      "keywords": [
+        {
+          "term": "go",
+          "kind": "skill",
+          "count": 1
+        },
+        {
+          "term": "rust",
+          "kind": "skill",
+          "count": 1
+        }
+      ],
+      "review": {
+        "checks": [
+          {
+            "id": "contact",
+            "ok": false,
+            "title": "Contact details",
+            "detail": "Add an email address and a phone number at the top."
+          },
+          {
+            "id": "sections",
+            "ok": false,
+            "title": "Standard section headings",
+            "detail": "Add a heading on its own line for: experience, education, skills."
+          },
+          {
+            "id": "bullets",
+            "ok": false,
+            "title": "Bullet points",
+            "detail": "Only 0 bullet points found. Describe each role in 3 to 6 bullets."
+          },
+          {
+            "id": "numbers",
+            "ok": false,
+            "title": "Results with numbers",
+            "detail": "0 bullet points include a number. Add figures such as users, percentages or time saved, where you have them."
+          },
+          {
+            "id": "length",
+            "ok": false,
+            "title": "Length",
+            "detail": "8 words is short; aim for at least 250."
+          },
+          {
+            "id": "wording",
+            "ok": true,
+            "title": "Strong wording",
+            "detail": "No weak phrases found."
+          },
+          {
+            "id": "pronouns",
+            "ok": false,
+            "title": "No first-person pronouns",
+            "detail": "Drop \"I\", \"my\" and \"me\"; start bullets with the verb."
+          }
+        ],
+        "passed": 1,
+        "total": 7,
+        "words": 8
+      },
+      "letter": "Dear Hiring Manager,\n\nI am writing to apply for this role. My experience with Go and Rust matches what you are looking for.\n\nI would welcome the chance to talk about how I can help your team. Thank you for your time and consideration.\n\nSincerely,\n[Your name]"
     }
   ],
   "sample_check": [

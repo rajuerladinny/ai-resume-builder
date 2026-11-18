@@ -7,6 +7,9 @@ COPY frontend/ ./
 RUN npm run build
 
 FROM python:3.12-slim
+LABEL org.opencontainers.image.title="AI Resume Builder" \
+      org.opencontainers.image.source="https://github.com/rajuerladinny/ai-resume-builder" \
+      org.opencontainers.image.licenses="Apache-2.0"
 WORKDIR /srv/backend
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

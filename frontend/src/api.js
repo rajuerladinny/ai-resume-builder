@@ -43,6 +43,7 @@ const post = (path, body) =>
 const httpApi = {
   analyze: (resume, job) => post("/analyze", { resume, job }),
   tailor: (resume, job) => post("/tailor", { resume, job }),
+  coverLetter: (resume, job) => post("/cover-letter", { resume, job }),
   rank: (job, resumes) => post("/rank", { job, resumes }),
   // The file is sent as the raw request body and read in memory; it is not stored.
   extract: (file) =>
@@ -52,5 +53,16 @@ const httpApi = {
       "This file could not be read. Paste the text instead."
     ),
 };
+
+/** Whether the server has an AI model connected: "ai", "mock", or null when unknown. */
+export async function aiMode() {
+  if (DEMO) return "demo";
+  try {
+    const res = await fetch("/api/health");
+    return res.ok ? (await res.json()).ai ?? null : null;
+  } catch {
+    return null;
+  }
+}
 
 export const api = DEMO ? createDemoApi() : httpApi;

@@ -21,7 +21,7 @@ _SECTIONS = {
 }
 _WORD = re.compile(r"[^ \t\n\r\f\v]+")
 _LINE_BREAK = re.compile(r"\r\n|\n|\r")
-_WEAK = [
+WEAK_PHRASES = [
     "responsible for",
     "worked on",
     "helped with",
@@ -45,7 +45,7 @@ def review(resume: str) -> dict:
         if not any(pattern.match(line) and len(_WORD.findall(line)) <= 4 for line in lines)
     ]
     lowered = resume.lower()
-    weak = [phrase for phrase in _WEAK if phrase in lowered]
+    weak = [phrase for phrase in WEAK_PHRASES if phrase in lowered]
     has_email = bool(_EMAIL.search(resume))
     has_phone = bool(_PHONE.search(resume))
 
