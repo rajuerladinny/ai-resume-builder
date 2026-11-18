@@ -9,12 +9,11 @@
 Run it after changing keywords.py, checks.py or tailor.py.
 tests/test_shared.py fails when either file is out of date.
 """
-import json
-from pathlib import Path
-
 import base64
 import io
+import json
 import zipfile
+from pathlib import Path
 
 from . import checks, extract, keywords, tailor
 

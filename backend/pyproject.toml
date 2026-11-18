@@ -1,0 +1,20 @@
+[project]
+name = "ai-resume-builder-backend"
+version = "1.0.0"
+description = "API for AI Resume Builder: match score, resume review, tailoring and cover letters"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]

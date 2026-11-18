@@ -61,7 +61,7 @@ STOPWORDS = {
     "responsibility", "responsibilities", "including", "plus", "new",
     "using", "use", "used", "well", "looking", "join", "need", "needs",
     "like", "based", "etc.", "end", "minimum", "least", "high", "best", "related",
-    "including", "ensure", "help", "one", "two", "three", "day", "days",
+    "ensure", "help", "one", "two", "three", "day", "days",
     "apply", "location", "salary", "benefit", "benefits", "opportunity",
     "hands-on", "proficiency", "proficient", "familiarity", "familiar",
     "degree", "bachelor", "equivalent", "position", "environment",

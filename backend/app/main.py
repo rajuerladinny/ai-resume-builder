@@ -12,7 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import checks, extract, keywords, tailor as tailoring
+from . import checks, extract, keywords
+from . import tailor as tailoring
 from .ratelimit import RateLimiter
 
 app = FastAPI(title="AI Resume Builder")

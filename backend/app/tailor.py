@@ -1,5 +1,5 @@
 """Tailoring flow: analyse, rewrite, analyse again, flag anything invented."""
-from typing import Callable
+from collections.abc import Callable
 
 from . import llm
 from .keywords import analyze, normalize

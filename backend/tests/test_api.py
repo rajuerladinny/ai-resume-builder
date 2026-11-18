@@ -43,7 +43,7 @@ def test_short_or_missing_input_is_rejected(client):
 
 
 def test_extract_reads_text_and_word_files(client):
-    text = client.post("/api/extract", content="Ravi Kumar\r\nDeveloper".encode())
+    text = client.post("/api/extract", content=b"Ravi Kumar\r\nDeveloper")
     assert text.json() == {"text": "Ravi Kumar\nDeveloper", "characters": 20}
     word = client.post(
         "/api/extract", content=docx("<w:p><w:r><w:t>Ravi Kumar</w:t></w:r></w:p>")
