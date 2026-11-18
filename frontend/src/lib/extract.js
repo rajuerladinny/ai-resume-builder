@@ -1,7 +1,8 @@
 // Reads a resume file in the browser, for the demo (which has no server).
 // Mirrors backend/app/extract.py: the type is decided from the file's first
 // bytes, .docx is read without an XML parser, and sizes are capped.
-// fixtures/parity.json holds files with the text the backend extracts.
+// fixtures/parity.json holds files with the text and ATS check the backend gives.
+import { atsCheck } from "./ats.js";
 
 export const MAX_BYTES = 5 * 1024 * 1024;
 const MAX_PDF_PAGES = 15;
@@ -86,20 +87,50 @@ export async function readZipEntry(bytes, wanted, maxSize = MAX_DOCX_XML_BYTES) 
   return null;
 }
 
+const TABLE = /<w:tbl[ \t\r\n/>]/g;
+const TEXT_BOX = /<w:txbxContent[ \t\r\n/>]/g;
+const IMAGE = /<w:(?:drawing|pict)[ \t\r\n/>]/g;
+// Word names its page headers and footers header1.xml, footer1.xml and so on.
+const HEADER_PARTS = ["header", "footer"].flatMap((kind) => [1, 2, 3].map((n) => `word/${kind}${n}.xml`));
+const count = (text, pattern) => (text.match(pattern) || []).length;
+const facts = (type, pages = null) => ({ type, pages, tables: 0, text_boxes: 0, images: 0, header_text: "" });
+
 async function docxText(bytes) {
   let xml;
+  const headers = [];
   try {
     xml = await readZipEntry(bytes, "word/document.xml");
+    if (xml !== null) {
+      for (const name of HEADER_PARTS) {
+        try {
+          const part = await readZipEntry(bytes, name);
+          if (part !== null) headers.push(docxXmlToText(new TextDecoder().decode(part)));
+        } catch (error) {
+          if (!(error instanceof RangeError)) throw error; // an oversized header is skipped
+        }
+      }
+    }
   } catch (error) {
     if (error instanceof RangeError) throw new Error("This Word file is too large.");
     throw new Error("This Word file could not be read.");
   }
   if (xml === null) throw new Error("Only .docx Word files are supported.");
-  return docxXmlToText(new TextDecoder().decode(xml));
+  const source = new TextDecoder().decode(xml);
+  return {
+    text: docxXmlToText(source),
+    facts: {
+      ...facts("docx"),
+      tables: count(source, TABLE),
+      text_boxes: count(source, TEXT_BOX),
+      images: count(source, IMAGE),
+      header_text: tidy(headers.join("\n")),
+    },
+  };
 }
 
 async function pdfText(bytes) {
   let text = "";
+  let pages = 0;
   try {
     // Loaded only when a PDF is opened, so it stays out of the first download.
     const [pdfjs, worker] = await Promise.all([
@@ -111,6 +142,7 @@ async function pdfText(bytes) {
     if (pdf.numPages > MAX_PDF_PAGES) {
       throw new RangeError(`This PDF has more than ${MAX_PDF_PAGES} pages.`);
     }
+    pages = pdf.numPages;
     for (let n = 1; n <= pdf.numPages; n++) {
       const content = await (await pdf.getPage(n)).getTextContent();
       for (const item of content.items) {
@@ -129,32 +161,34 @@ async function pdfText(bytes) {
   if (!text.trim()) {
     throw new Error("This PDF has no selectable text (it may be a scan). Paste the text instead.");
   }
-  return text;
+  return { text, facts: facts("pdf", pages) };
 }
 
 const startsWith = (bytes, ...codes) => codes.every((code, i) => bytes[i] === code);
 
-/** Plain text from PDF, .docx or text bytes. Throws an Error safe to show. */
+/** Plain text, its length and an ATS readability check from PDF, .docx or text bytes. */
 export async function extractBytes(bytes) {
   if (!bytes.length) throw new Error("The file is empty.");
   if (bytes.length > MAX_BYTES) throw new Error("The file is larger than 5 MB.");
-  let text;
+  let read;
   if (startsWith(bytes, 0x25, 0x50, 0x44, 0x46, 0x2d)) {
-    text = await pdfText(bytes); // %PDF-
+    read = await pdfText(bytes); // %PDF-
   } else if (startsWith(bytes, 0x50, 0x4b, 0x03, 0x04)) {
-    text = await docxText(bytes); // PK..
+    read = await docxText(bytes); // PK..
   } else if (bytes.subarray(0, 4096).includes(0)) {
     throw new Error("Upload a PDF, a .docx Word file or a text file.");
   } else {
+    let decoded;
     try {
-      text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      decoded = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
     } catch {
-      text = new TextDecoder("latin1").decode(bytes);
+      decoded = new TextDecoder("latin1").decode(bytes);
     }
+    read = { text: decoded, facts: facts("text") };
   }
-  text = tidy(text);
+  const text = tidy(read.text);
   if (!text) throw new Error("No text was found in the file.");
-  return { text, characters: text.length };
+  return { text, characters: text.length, ats: atsCheck(text, read.facts) };
 }
 
 export async function extractFile(file) {

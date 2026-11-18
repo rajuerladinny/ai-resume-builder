@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+- **ATS readability check**: after a PDF or Word upload, checks whether screening software can read the file (tables, text boxes, images, contact details only in a header, broken characters, column layouts, selectable text and page count), with a fix for each problem. `POST /api/extract` now returns it as `ats`.
+- **Best-fit jobs**: rank up to 10 job posts for one resume, then tailor for any of them in one click. New `POST /api/rank-jobs`.
+- **My applications**: an application tracker kept in the browser, with statuses, interview rate, filters, edit and undo, CSV export and backup files. "Save to My applications" from the Tailor and Best-fit jobs tabs.
+- **Anonymous screening** in Compare resumes: candidates shown as numbers, and resumes readable with names, contact details, links and personal details removed. Scores are unaffected.
+
 ## 1.0.0
 
 ### Added

@@ -337,6 +337,73 @@ footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 2
 .detail-row td { background: var(--surface-2); }
 .detail p { margin: 0 0 8px; }
 
+/* ---------- form fields ---------- */
+.text-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+.text-input:focus { border-color: var(--brand); }
+select.text-input { width: auto; cursor: pointer; }
+.inline-select { display: inline-flex; gap: 6px; align-items: center; font-weight: 400; color: var(--muted); }
+.spacer { flex: 1; }
+.label { display: block; }
+
+/* ---------- best-fit jobs ---------- */
+.job-list { display: grid; gap: 10px; margin: 6px 0 10px; max-height: 520px; overflow-y: auto; padding-right: 2px; }
+.job-item { border: 1px solid var(--border); border-radius: 10px; padding: 8px; background: var(--surface); }
+.job-item .row { flex-wrap: nowrap; }
+.job-item textarea { margin-top: 6px; }
+.job-results { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.job-results li {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.job-result-body { flex: 1; min-width: 200px; display: flex; flex-direction: column; }
+.pct.big { font-size: 22px; min-width: 64px; }
+
+/* ---------- my applications ---------- */
+.stats { display: flex; flex-wrap: wrap; gap: 18px 28px; }
+.stats > div { display: flex; flex-direction: column; }
+.stat-value { font-size: 24px; font-weight: 700; }
+.stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.status-interview { color: var(--brand); }
+.status-offer { color: var(--good); }
+.status-rejected { color: var(--low); }
+.status-applied { color: var(--ok); }
+.applications { list-style: none; padding: 0; margin: 0; }
+.applications .card { margin-bottom: 10px; padding: 14px 16px; }
+.app-notes { margin: 8px 0 0; font-size: 14px; white-space: pre-wrap; color: var(--muted); }
+.small-link { font-size: 13px; }
+.app-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; margin-top: 10px; }
+.app-form label { display: flex; flex-direction: column; gap: 4px; }
+.app-form .wide { grid-column: 1 / -1; }
+.app-form select.text-input { width: 100%; }
+
+/* ---------- compare: anonymized text ---------- */
+.resume-text {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
 /* ---------- print: only the chosen resume or letter ---------- */
 .print-only { display: none; }
 @media print {

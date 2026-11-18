@@ -1,6 +1,6 @@
 [project]
 name = "ai-resume-builder-backend"
-version = "1.0.0"
+version = "1.1.0"
 description = "API for AI Resume Builder: match score, resume review, tailoring and cover letters"
 requires-python = ">=3.12"
 license = "Apache-2.0"

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { api, DEMO, MAX_UPLOAD_BYTES } from "./api.js";
 import { MAX_COMPARE, MAX_RESUME_CHARS, rankingToCsv, uniqueName } from "./lib/rank.js";
+import { candidateLabel, redactResume } from "./lib/redact.js";
 import sample from "./lib/sample.js";
 
 const MIN_JOB = 100;
@@ -33,8 +34,9 @@ function download(filename, text) {
   URL.revokeObjectURL(url);
 }
 
-function Detail({ result }) {
+function Detail({ result, text, anonymous }) {
   const failed = result.review.checks.filter((c) => !c.ok);
+  const [showText, setShowText] = useState(false);
   return (
     <div className="detail">
       {result.matched.length > 0 && (
@@ -62,6 +64,10 @@ function Detail({ result }) {
         {result.review.words} words.
         {failed.length > 0 && ` Needs work: ${failed.map((c) => c.title.toLowerCase()).join(", ")}.`}
       </p>
+      <button type="button" className="link small" aria-expanded={showText} onClick={() => setShowText(!showText)}>
+        {showText ? "Hide resume" : anonymous ? "Read anonymized resume" : "Read resume"}
+      </button>
+      {showText && <pre className="resume-text">{anonymous ? redactResume(text).text : text}</pre>}
     </div>
   );
 }
@@ -74,6 +80,7 @@ export default function Compare() {
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
+  const [anonymous, setAnonymous] = useState(false);
   const fileInput = useRef(null);
   const nextId = useRef(1);
 
@@ -127,7 +134,11 @@ export default function Compare() {
     setError("");
     setOpen(null);
     try {
-      setData(await api.rank(job, ready.map((f) => ({ name: f.name, text: f.text }))));
+      // Labels follow the file list, so "Candidate 2" is the same person everywhere.
+      const submitted = ready.map((f) => ({ name: f.name, text: f.text, label: candidateLabel(files.indexOf(f)) }));
+      // Scores always use the full text; anonymous screening only changes what is shown.
+      const res = await api.rank(job, submitted.map(({ name, text }) => ({ name, text })));
+      setData({ ...res, submitted });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -209,16 +220,16 @@ export default function Compare() {
           </div>
           {files.length > 0 && (
             <ul className="files">
-              {files.map((f) => (
+              {files.map((f, i) => (
                 <li key={f.id} className={f.status}>
-                  <span className="file-name">{f.name}</span>
+                  <span className="file-name">{anonymous ? candidateLabel(i) : f.name}</span>
                   <span className="file-status">
                     {f.status === "reading" ? "Reading…" : f.status === "ready" ? "Ready" : f.error}
                   </span>
                   <button
                     type="button"
                     className="link"
-                    aria-label={`Remove ${f.name}`}
+                    aria-label={`Remove ${anonymous ? candidateLabel(i) : f.name}`}
                     disabled={Boolean(busy)}
                     onClick={() => remove(f.id)}
                   >
@@ -238,6 +249,10 @@ export default function Compare() {
         <button type="button" className="link" disabled={Boolean(busy)} onClick={loadSample}>
           Try sample candidates
         </button>
+        <label className="check" title="Hide names, contact details and personal details while you screen">
+          <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
+          Anonymous screening
+        </label>
         {(job || files.length > 0) && (
           <button
             type="button"
@@ -269,7 +284,12 @@ export default function Compare() {
             <h2>Ranking</h2>
             <button
               className="secondary"
-              onClick={() => download("resume-ranking.csv", rankingToCsv(data.results))}
+              onClick={() =>
+                download(
+                  "resume-ranking.csv",
+                  rankingToCsv(anonymous ? data.results.map((r) => ({ ...r, name: data.submitted[r.index].label })) : data.results)
+                )
+              }
             >
               Export CSV
             </button>
@@ -279,6 +299,12 @@ export default function Compare() {
             resume. Use it to decide what to read first, not whom to reject: a strong candidate
             who words things differently can score low.
           </p>
+          {anonymous && (
+            <p className="notice">
+              Anonymous screening is on: names, contact details, links and personal details such as age or gender are
+              hidden. Untick it when you have made your shortlist.
+            </p>
+          )}
           {data.keywords === 0 && (
             <p className="hint">No keywords found in the job post. Paste the full description.</p>
           )}
@@ -302,6 +328,9 @@ export default function Compare() {
                     key={r.index}
                     rank={i + 1}
                     result={r}
+                    name={anonymous ? data.submitted[r.index].label : r.name}
+                    text={data.submitted[r.index].text}
+                    anonymous={anonymous}
                     open={open === r.index}
                     onToggle={() => setOpen(open === r.index ? null : r.index)}
                   />
@@ -315,12 +344,12 @@ export default function Compare() {
   );
 }
 
-function ResultRows({ rank, result, open, onToggle }) {
+function ResultRows({ rank, result, name, text, anonymous, open, onToggle }) {
   return (
     <>
       <tr>
         <td>{rank}</td>
-        <td className="file-name">{result.name}</td>
+        <td className="file-name">{name}</td>
         <td>
           <span className={`pct ${tone(result.score)}`}>{result.score}%</span>
         </td>
@@ -337,7 +366,7 @@ function ResultRows({ rank, result, open, onToggle }) {
       {open && (
         <tr className="detail-row">
           <td colSpan={6}>
-            <Detail result={result} />
+            <Detail result={result} text={text} anonymous={anonymous} />
           </td>
         </tr>
       )}

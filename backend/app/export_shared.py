@@ -6,7 +6,7 @@
 - fixtures/parity.json: inputs with this backend's results, which the
   JavaScript ports used by the in-browser demo must reproduce exactly
 
-Run it after changing keywords.py, checks.py, tailor.py or cover_letter.py.
+Run it after changing keywords.py, checks.py, tailor.py, cover_letter.py, extract.py or ats.py.
 tests/test_shared.py fails when either file is out of date.
 """
 import base64
@@ -15,7 +15,7 @@ import json
 import zipfile
 from pathlib import Path
 
-from . import checks, cover_letter, extract, keywords, tailor
+from . import ats, checks, cover_letter, extract, keywords, tailor
 
 ROOT = Path(__file__).resolve().parents[2]
 VOCAB_PATH = ROOT / "frontend" / "src" / "lib" / "vocab.js"
@@ -79,6 +79,11 @@ def parity() -> dict:
         {"name": "tailored.docx", "text": sample["tailored"]},
         {"name": "copy of original.pdf", "text": sample["resume"]},
     ]
+    jobs = [
+        {"name": "Bakery", "text": "Bread, cakes and ovens. Bread daily."},
+        {"name": "Frontend", "text": sample["job"]},
+        {"name": "Tailored as a job", "text": sample["tailored"]},
+    ]
     return {
         "cases": cases,
         "sample_check": tailor.invented_terms(sample["resume"], sample["tailored"], sample["job"]),
@@ -87,23 +92,12 @@ def parity() -> dict:
             "resumes": candidates,
             "expected": keywords.rank_resumes(sample["job"], candidates),
         },
-        "files": [
-            {
-                "name": "deflated.docx",
-                "base64": base64.b64encode(sample_docx()).decode(),
-                "text": extract.extract_text(sample_docx()),
-            },
-            {
-                "name": "stored.docx",
-                "base64": base64.b64encode(sample_docx(compress=False)).decode(),
-                "text": extract.extract_text(sample_docx(compress=False)),
-            },
-            {
-                "name": "notes.txt",
-                "base64": base64.b64encode("\ufeffLine one  \r\n\r\n\r\n\r\nLine two\r".encode()).decode(),
-                "text": extract.extract_text("\ufeffLine one  \r\n\r\n\r\n\r\nLine two\r".encode()),
-            },
-        ],
+        "rank_jobs": {
+            "resume": sample["resume"],
+            "jobs": jobs,
+            "expected": keywords.rank_jobs(sample["resume"], jobs),
+        },
+        "files": [file_case(name, data) for name, data in SAMPLE_FILES()],
     }
 
 
@@ -118,11 +112,44 @@ DOCX_XML = (
 )
 
 
-def sample_docx(compress: bool = True) -> bytes:
+LAYOUT_DOCX_XML = (
+    "<w:document><w:body>"
+    "<w:p><w:r><w:t>Asha Rao</w:t></w:r></w:p>"
+    "<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Skills</w:t></w:r></w:p></w:tc></w:tr></w:tbl>"
+    "<w:p><w:r><w:drawing><wp:inline/></w:drawing></w:r></w:p>"
+    "<w:p><w:r><w:pict><w:txbxContent><w:p><w:r><w:t>Boxed \uf0b7 text</w:t></w:r></w:p>"
+    "</w:txbxContent></w:pict></w:r></w:p>"
+    + "".join(f"<w:p><w:r><w:t>Line {n}</w:t></w:r></w:p>" for n in range(20))
+    + "</w:body></w:document>"
+)
+LAYOUT_HEADER_XML = "<w:hdr><w:p><w:r><w:t>asha@example.com | +91 98765 00000</w:t></w:r></w:p></w:hdr>"
+
+
+def SAMPLE_FILES() -> list[tuple[str, bytes]]:
+    return [
+        ("deflated.docx", sample_docx()),
+        ("stored.docx", sample_docx(compress=False)),
+        ("layout.docx", sample_docx(parts=(("word/document.xml", LAYOUT_DOCX_XML), ("word/header1.xml", LAYOUT_HEADER_XML)))),
+        ("notes.txt", "\ufeffLine one  \r\n\r\n\r\n\r\nLine two\r".encode()),
+        ("resume.txt", read_js(SAMPLE_PATH)["resume"].encode()),
+    ]
+
+
+def file_case(name: str, data: bytes) -> dict:
+    text, facts = extract.extract_file(data)
+    return {
+        "name": name,
+        "base64": base64.b64encode(data).decode(),
+        "text": text,
+        "ats": ats.ats_check(text, facts),
+    }
+
+
+def sample_docx(compress: bool = True, parts: tuple = (("word/document.xml", DOCX_XML),)) -> bytes:
     """A small .docx with fixed timestamps, so the bytes never change."""
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as archive:
-        for name, body in (("[Content_Types].xml", "<Types/>"), ("word/document.xml", DOCX_XML)):
+        for name, body in (("[Content_Types].xml", "<Types/>"), *parts):
             info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED if compress else zipfile.ZIP_STORED
             archive.writestr(info, body)

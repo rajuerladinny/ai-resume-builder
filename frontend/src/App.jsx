@@ -2,12 +2,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { aiMode, api, DEMO, MAX_UPLOAD_BYTES } from "./api.js";
 import Compare from "./Compare.jsx";
+import RankJobs from "./RankJobs.jsx";
+import Tracker from "./Tracker.jsx";
 import { coachBullets } from "./lib/bullets.js";
+import { roleTitle } from "./lib/coverLetter.js";
 import { diffLines, diffSummary } from "./lib/diff.js";
 import { buildDocx, parseLetter, parseResume } from "./lib/format.js";
 import { interviewQuestions } from "./lib/interview.js";
 import sample from "./lib/sample.js";
 import { load, remove, save } from "./lib/storage.js";
+import { addApplication, normalizeApplication, removeApplication, updateApplication } from "./lib/tracker.js";
 
 const MIN_CHARS = 100;
 const MAX_RESUME = 20000;
@@ -56,15 +60,17 @@ function Chips({ title, items, tone: chipTone }) {
   );
 }
 
-function Review({ review, title }) {
+function Review({ review, title, intro }) {
   return (
     <section className="card no-print">
       <div className="row">
         <h2>{title}</h2>
         <span className="hint">
-          {review.passed} of {review.total} checks passed · {review.words} words
+          {review.passed} of {review.total} checks passed
+          {review.words !== undefined && ` · ${review.words} words`}
         </span>
       </div>
+      {intro && <p className="hint">{intro}</p>}
       <ul className="checks">
         {review.checks.map((c) => (
           <li key={c.id} className={c.ok ? "pass" : "fail"}>
@@ -329,12 +335,10 @@ function Toolkit({ resume, job, onPrint }) {
 
 /* ---------- tailor page ---------- */
 
-function Tailor({ onPrint }) {
-  const remembered = useMemo(() => load("draft"), []);
-  const [remember, setRemember] = useState(Boolean(remembered));
-  const [resume, setResume] = useState(remembered?.resume ?? "");
-  const [job, setJob] = useState(remembered?.job ?? "");
+function Tailor({ resume, setResume, job, setJob, remember, setRemember, onPrint, onTrack }) {
   const [analysis, setAnalysis] = useState(null);
+  const [ats, setAts] = useState(null);
+  const [tracked, setTracked] = useState(false);
   const [review, setReview] = useState(null);
   const [result, setResult] = useState(null);
   const [original, setOriginal] = useState("");
@@ -345,17 +349,12 @@ function Tailor({ onPrint }) {
   const [error, setError] = useState("");
   const fileInput = useRef(null);
 
-  // Saved only while "Remember on this device" is ticked.
-  useEffect(() => {
-    if (remember) save("draft", { resume, job });
-    else remove("draft");
-  }, [remember, resume, job]);
-
   function reset() {
     setAnalysis(null);
     setReview(null);
     setResult(null);
     setError("");
+    setTracked(false);
   }
 
   async function run(kind) {
@@ -377,6 +376,7 @@ function Tailor({ onPrint }) {
         setView("edit");
       }
       setAnalyzed({ resume, job });
+      setTracked(false);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -398,6 +398,7 @@ function Tailor({ onPrint }) {
       const res = await api.extract(file);
       setResume(res.text.slice(0, MAX_RESUME));
       reset();
+      setAts(res.ats ? { ...res.ats, file: file.name } : null);
       if (res.text.length > MAX_RESUME) {
         setError(`The file is long; only the first ${MAX_RESUME.toLocaleString()} characters were kept.`);
       }
@@ -501,6 +502,7 @@ function Tailor({ onPrint }) {
             onClick={() => {
               setResume("");
               setJob("");
+              setAts(null);
               reset();
             }}
           >
@@ -520,6 +522,14 @@ function Tailor({ onPrint }) {
         </p>
       )}
 
+      {ats && (
+        <Review
+          review={ats}
+          title="ATS readability"
+          intro={`How applicant tracking systems are likely to read ${ats.file}. Fix these in the file you send to employers.`}
+        />
+      )}
+
       {analysis && (
         <section className="card no-print">
           <div className="score-row">
@@ -534,6 +544,17 @@ function Tailor({ onPrint }) {
               <Chips title="Found in your resume" items={analysis.matched} tone="good" />
               <Chips title="Missing from your resume" items={analysis.missing} tone="low" />
               <p className="hint">Only add a missing keyword if you really have that experience.</p>
+              <button
+                type="button"
+                className="small secondary"
+                disabled={tracked}
+                onClick={() => {
+                  onTrack({ role: roleTitle(analyzed.job), score: analysis.score, status: "saved" });
+                  setTracked(true);
+                }}
+              >
+                {tracked ? "Saved to My applications" : "Save to My applications"}
+              </button>
             </div>
           </div>
         </section>
@@ -632,13 +653,44 @@ function AiStatus() {
 
 const MODES = [
   ["tailor", "Tailor my resume"],
+  ["jobs", "Best-fit jobs"],
+  ["tracker", "My applications"],
   ["compare", "Compare resumes"],
 ];
+
+const INTRO = {
+  tailor:
+    "Paste your resume and a job post. See how well they match, fix weak spots, then get a tailored resume, a cover letter and interview questions.",
+  jobs: "Considering several jobs? See which ones your resume fits best before you spend time applying.",
+  tracker: "Every application in one place: where you applied, with which resume, and what happened.",
+  compare: "Hiring? Add a job post and up to 20 resumes to see which ones match it best, with optional anonymous screening.",
+};
 
 export default function App() {
   const [mode, setMode] = useState("tailor");
   const [theme, nextTheme] = useTheme();
   const [printing, setPrinting] = useState(null);
+  const remembered = useMemo(() => load("draft"), []);
+  const [remember, setRemember] = useState(Boolean(remembered));
+  const [resume, setResume] = useState(remembered?.resume ?? "");
+  const [job, setJob] = useState(remembered?.job ?? "");
+  const [applications, setApplications] = useState(() => {
+    const saved = load("applications", []);
+    return Array.isArray(saved) ? saved.map(normalizeApplication) : [];
+  });
+
+  // The draft is saved only while "Remember on this device" is ticked.
+  useEffect(() => {
+    if (remember) save("draft", { resume, job });
+    else remove("draft");
+  }, [remember, resume, job]);
+
+  // The tracker is the point of saving, so it is always kept in this browser.
+  useEffect(() => {
+    save("applications", applications);
+  }, [applications]);
+
+  const track = (input) => setApplications((list) => addApplication(list, input));
 
   // Render the print layout synchronously, then open the browser's print dialog.
   function printDoc(text, kind) {
@@ -670,11 +722,7 @@ export default function App() {
               </button>
             </div>
           </div>
-          <p>
-            {mode === "tailor"
-              ? "Paste your resume and a job post. See how well they match, fix weak spots, then get a tailored resume, a cover letter and interview questions."
-              : "Hiring? Add a job post and up to 20 resumes to see which ones match it best."}
-          </p>
+          <p>{INTRO[mode]}</p>
           <div className="modes" role="tablist" aria-label="What would you like to do?">
             {MODES.map(([value, text]) => (
               <button
@@ -694,7 +742,37 @@ export default function App() {
         <main>
           {/* Both stay mounted, so switching tabs never loses pasted text or results. */}
           <div hidden={mode !== "tailor"}>
-            <Tailor onPrint={printDoc} />
+            <Tailor
+              resume={resume}
+              setResume={setResume}
+              job={job}
+              setJob={setJob}
+              remember={remember}
+              setRemember={setRemember}
+              onPrint={printDoc}
+              onTrack={track}
+            />
+          </div>
+          <div hidden={mode !== "jobs"}>
+            <RankJobs
+              resume={resume}
+              setResume={setResume}
+              onTrack={track}
+              onTailor={(text) => {
+                setJob(text);
+                setMode("tailor");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          </div>
+          <div hidden={mode !== "tracker"}>
+            <Tracker
+              applications={applications}
+              onAdd={track}
+              onUpdate={(id, changes) => setApplications((list) => updateApplication(list, id, changes))}
+              onRemove={(id) => setApplications((list) => removeApplication(list, id))}
+              onReplace={setApplications}
+            />
           </div>
           <div hidden={mode !== "compare"}>
             <Compare />
@@ -703,7 +781,7 @@ export default function App() {
 
         <footer>
           Resumes are processed to produce the results and are not stored on the server. "Remember on
-          this device" keeps a copy only in this browser. AI rewriting and cover letters send the text to
+          this device" and My applications keep data only in this browser. AI rewriting and cover letters send the text to
           the AI provider the site's owner has connected.{" "}
           <a href="https://github.com/rajuerladinny/ai-resume-builder">Source code</a>
         </footer>

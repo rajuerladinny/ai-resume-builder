@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from app import export_shared, extract
+from app import ats, export_shared, extract
 
 needs_frontend = pytest.mark.skipif(
     not export_shared.SAMPLE_PATH.exists(), reason="frontend sources are not present"
@@ -28,9 +28,11 @@ def test_shared_files_are_up_to_date():
 @needs_frontend
 def test_committed_files_extract_to_their_recorded_text():
     committed = json.loads(export_shared.PARITY_PATH.read_text(encoding="utf-8"))
-    assert len(committed["files"]) == 3
+    assert len(committed["files"]) == 5
     for file in committed["files"]:
-        assert extract.extract_text(base64.b64decode(file["base64"])) == file["text"], file["name"]
+        text, facts = extract.extract_file(base64.b64decode(file["base64"]))
+        assert text == file["text"], file["name"]
+        assert ats.ats_check(text, facts) == file["ats"], file["name"]
 
 
 def test_parity_cases_cover_the_awkward_inputs():

@@ -42,9 +42,10 @@ ai-resume-builder/
 | Module | Responsibility |
 |---|---|
 | `main.py` | Routes, startup checks of settings, rate limits, security headers, serves the built page |
-| `keywords.py` | Keyword extraction, aliases (`reactjs` → `react`) and the match score. No AI |
+| `keywords.py` | Keyword extraction, aliases (`reactjs` → `react`), the match score, and ranking of resumes or job posts. No AI |
 | `checks.py` | The seven-check resume review. No AI |
-| `extract.py` | Reads uploaded PDF, .docx and text in memory |
+| `extract.py` | Reads uploaded PDF, .docx and text in memory, and collects layout facts (pages, tables, text boxes, images, header text) |
+| `ats.py` | ATS readability check on the uploaded file. No AI |
 | `tailor.py` | Rewrite flow: score, rewrite, rescore, flag added keywords, fall back safely |
 | `cover_letter.py` | AI cover letter with safeguards, and the template letter |
 | `llm.py` | OpenAI-compatible client, prompts and settings checks |
@@ -56,15 +57,19 @@ ai-resume-builder/
 | File | Responsibility |
 |---|---|
 | `App.jsx` | Page layout, theme, the Tailor flow, the Next steps toolkit, export and print |
-| `Compare.jsx` | Compare up to 20 resumes against one job post |
+| `RankJobs.jsx` | Best-fit jobs: rank up to 10 job posts for one resume |
+| `Tracker.jsx` | My applications: the application tracker |
+| `Compare.jsx` | Compare up to 20 resumes against one job post, with anonymous screening |
 | `api.js` | Calls the API, or the in-browser demo when built with `VITE_DEMO_MODE` or opened with `?demo` |
-| `lib/keywords.js`, `lib/checks.js`, `lib/extract.js`, `lib/coverLetter.js` | JavaScript ports of the backend, for the demo |
+| `lib/keywords.js`, `lib/checks.js`, `lib/extract.js`, `lib/ats.js`, `lib/coverLetter.js` | JavaScript ports of the backend, for the demo |
 | `lib/vocab.js` | Skill, alias and stopword lists generated from the backend. Do not edit |
 | `lib/demo.js` | The in-browser stand-in for the API |
 | `lib/bullets.js` | Bullet coach |
 | `lib/interview.js` | Interview questions |
 | `lib/format.js` | Splits a resume or letter into blocks; builds the Word file |
-| `lib/storage.js` | Opt-in, failure-safe browser storage |
+| `lib/storage.js` | Failure-safe browser storage |
+| `lib/tracker.js` | Application records: cleaning, sorting, summary, CSV and backups |
+| `lib/redact.js` | Removes names, contact details and personal details for anonymous screening |
 | `lib/diff.js`, `lib/rank.js`, `lib/sample.js` | Changes view, CSV export, the sample resume |
 
 ## Tests
@@ -74,12 +79,14 @@ ai-resume-builder/
 | `backend/tests/test_core.py` | Keywords, scoring and the tailoring safeguards |
 | `backend/tests/test_checks_extract.py` | Resume review and file reading |
 | `backend/tests/test_cover_letter.py` | Template letter, AI safeguards, settings checks |
+| `backend/tests/test_ats.py` | Layout facts, every ATS check, job ranking |
 | `backend/tests/test_api.py` | Every route, limits, headers and health |
 | `backend/tests/test_shared.py` | Generated files are up to date |
 | `frontend/tests/parity.test.js` | The JavaScript ports match the backend exactly |
 | `frontend/tests/features.test.js` | Bullet coach, interview prep, layouts, Word export round trip, storage |
 | `frontend/tests/lib.test.js` | Diff, ranking, CSV and the demo API |
+| `frontend/tests/usecases.test.js` | Tracker, anonymous screening, ATS check, job ranking in the demo |
 
 ## Keeping the two implementations in step
 
-The demo and the server must give identical scores, reviews and template letters. The Python code is the source of truth. `python -m app.export_shared` records its results on fixed inputs in `fixtures/parity.json`, and `frontend/tests/parity.test.js` fails if the JavaScript gives anything different. `backend/tests/test_shared.py` fails if the recorded results are out of date.
+The demo and the server must give identical scores, reviews, template letters, job rankings and ATS checks for Word and text files. The Python code is the source of truth. `python -m app.export_shared` records its results on fixed inputs in `fixtures/parity.json`, and `frontend/tests/parity.test.js` fails if the JavaScript gives anything different. `backend/tests/test_shared.py` fails if the recorded results are out of date.

@@ -5,7 +5,7 @@
 import { review } from "./checks.js";
 import { templateLetter } from "./coverLetter.js";
 import { extractFile } from "./extract.js";
-import { analyze, extractKeywords, inventedTerms, rankResumes, suggestions } from "./keywords.js";
+import { analyze, extractKeywords, inventedTerms, rankJobs, rankResumes, suggestions } from "./keywords.js";
 import sample from "./sample.js";
 
 const same = (a, b) => a.trim() === b.trim();
@@ -44,6 +44,7 @@ export function createDemoApi() {
         review: review(resumes[r.index].text),
       })),
     }),
+    rankJobs: async (resume, jobs) => ({ results: rankJobs(resume, jobs) }),
     // The file is read here in the browser; it is never uploaded.
     extract: (file) => extractFile(file),
   };
