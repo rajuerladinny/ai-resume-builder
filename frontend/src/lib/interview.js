@@ -43,7 +43,7 @@ export function interviewQuestions(resume, job) {
     },
     ...has.map((k) => ({
       kind: "skill",
-      question: `Tell me about a project where you used ${displayTerm(k.term, job)}. What was your part, and what was the result?`,
+      question: `Tell me about your experience with ${displayTerm(k.term, job)}: one project where it mattered, your part, and the result.`,
       tip: STAR_TIP,
     })),
     ...lacks.map((k) => ({
